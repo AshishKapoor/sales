@@ -1,0 +1,53 @@
+[project]
+name = "advanced-django-blueprint"
+version = "0.1.0"
+description = "Advanced Django Blueprint"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.1.7",
+    "django-debug-toolbar>=5.1.0",
+    "django-extensions>=3.2.3",
+    "psycopg>=3.2.6",
+    "python-dotenv>=1.1.0",
+]
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "env",
+    "venv",
+    "migrations",
+    "node_modules",
+    "static",
+    "media",
+    "build",
+    "dist",
+    "settings",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "C90",  # mccabe complexity
+]
+
+ignore = [
+    "E501",
+]
+
+fixable = ["ALL"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+docstring-code-format = true
+docstring-code-line-length = 88
