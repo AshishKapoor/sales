@@ -22,7 +22,7 @@ A modern Django project blueprint designed with developer productivity and best 
 
 ### Option 1: Using Docker
 
-1. Copy and rename `.env.dev` to `.env`
+1. Copy and rename `.env.example` to `.env.dev`
 2. Run Docker:
 
 ```bash
@@ -33,7 +33,7 @@ Django will be available at: http://localhost:8000
 
 ### Option 2: Using Makefile
 
-1. Copy and rename `.env.dev` to `.env`
+1. Copy and rename `.env.example` to `.env.dev`
 2. Sync and install dependencies:
 
 ```bash
