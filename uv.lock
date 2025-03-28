@@ -9,6 +9,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "django" },
     { name = "django-extensions" },
+    { name = "django-unfold" },
     { name = "drf-spectacular", extra = ["sidecar"] },
     { name = "pre-commit" },
     { name = "psycopg" },
@@ -19,6 +20,7 @@ dependencies = [
 requires-dist = [
     { name = "django", specifier = ">=5.1.7" },
     { name = "django-extensions", specifier = ">=3.2.3" },
+    { name = "django-unfold", specifier = ">=0.53.0" },
     { name = "drf-spectacular", extras = ["sidecar"], specifier = ">=0.28.0" },
     { name = "pre-commit", specifier = ">=4.2.0" },
     { name = "psycopg", specifier = ">=3.2.6" },
@@ -85,6 +87,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8a/f1/318684c9466968bf9a9c221663128206e460c1a67f595055be4b284cde8a/django-extensions-3.2.3.tar.gz", hash = "sha256:44d27919d04e23b3f40231c4ab7af4e61ce832ef46d610cc650d53e68328410a", size = 277216 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a7/7e/ba12b9660642663f5273141018d2bec0a1cae1711f4f6d1093920e157946/django_extensions-3.2.3-py3-none-any.whl", hash = "sha256:9600b7562f79a92cbf1fde6403c04fee314608fefbb595502e34383ae8203401", size = 229868 },
+]
+
+[[package]]
+name = "django-unfold"
+version = "0.53.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4e/b4/aa562b7283c423ba2f597ced03dbf5e0dedae8f754669c021afc2bec6316/django_unfold-0.53.0.tar.gz", hash = "sha256:26c1db660104fb993a4223f9ef341adbc199b320ebbb5708abd7ec57e237d8b8", size = 1022501 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0f/e4/43a3c618f5664ac0203757efdc753d147476bc43c608878a3bb985b1a472/django_unfold-0.53.0-py3-none-any.whl", hash = "sha256:419a6901c45c0bee8eedb2d7e9b10a5f3c12ea0450b9ca920856095f4ae9390c", size = 1111147 },
 ]
 
 [[package]]

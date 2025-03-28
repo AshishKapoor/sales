@@ -1,0 +1,33 @@
+services:
+  web:
+    build:
+      context: .
+    command: sh -c "wait-for-it.sh db:5432 -- uv run manage.py migrate && uv run manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.dev
+    environment:
+      - DJANGO_SETTINGS_MODULE=app.settings.dev
+    depends_on:
+      - db
+    networks:
+      - django_network
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env.dev
+    networks:
+      - django_network
+
+volumes:
+  postgres_data:
+
+networks:
+  django_network:
+    driver: bridge
