@@ -15,6 +15,7 @@ DEBUG = os.getenv("DEBUG")
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(",")
 
 INSTALLED_APPS = [
+    'unfold',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -109,3 +110,11 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+UNFOLD = {
+    "SITE_TITLE": "Default Admin",
+    "SITE_HEADER": "Default Admin Panel",
+    "SITE_URL": "/",
+    "SHOW_COUNTS": True,
+    "SHOW_HISTORY": True,
+}

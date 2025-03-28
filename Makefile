@@ -3,7 +3,7 @@ YELLOW := \033[1;33m
 RED    := \033[0;31m
 RESET  := \033[0m
 
-.PHONY: help install run test lint format clean migrate migrations shell collectstatic app command
+.PHONY: help install run test lint format clean migrate migrations shell collectstatic app command superuser
 
 help:
 	@printf "${YELLOW}Available commands:${RESET}\n"
@@ -19,6 +19,7 @@ help:
 	@printf "  ${GREEN}collectstatic${RESET}   - Collect static files\n"
 	@printf "  ${GREEN}app${RESET}             - Create a new app (name=your_app)\n"
 	@printf "  ${GREEN}command${RESET}         - Create a custom Django command (app=your_app name=your_command)\n"
+	@printf "  ${GREEN}superuser${RESET}       - Create a superuser\n"
 
 install:
 	@printf "${YELLOW}Installing dependencies...${RESET}\n"
@@ -95,3 +96,7 @@ command:
 	@touch $(app)/management/commands/__init__.py
 	@touch $(app)/management/commands/$(name).py
 	@printf "${GREEN}Command '$(name)' created successfully in '$(app)' app!${RESET}\n"
+
+superuser:
+	@printf "${YELLOW}Creating superuser...${RESET}\n"
+	uv run manage.py createsuperuser
