@@ -57,7 +57,7 @@ make run
 
 Makefile commands only work on your local development machine, when DATABASE_HOST is set to localhost.
 For development inside Docker, execute commands using:
-docker compose exec web <your-command>
+docker compose exec web {your command}
 
 ```bash
 make install        # Sync dependencies with uv
