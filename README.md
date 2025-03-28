@@ -53,14 +53,24 @@ make run
 
 ### Available Makefile Commands
 
+⚠️ Warning
+
+Makefile commands only work on your local development machine, when DATABASE_HOST is set to localhost.
+For development inside Docker, execute commands using:
+docker compose exec web <your-command>
+
 ```bash
 make install        # Sync dependencies with uv
 make run            # Start development server
 make migrate        # Apply database migrations
 make shell          # Open Django shell_plus
+make test           # Run tests
 make lint           # Run Ruff linter
 make format         # Format code using Ruff
 make clean          # Delete cache and temporary files
+make superuser name # Make super user
+make app name={app_name} # Create app
+make command app={app_name} command={command_name} # Create command with app name and command name
 ```
 
 ---
