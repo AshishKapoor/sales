@@ -100,7 +100,7 @@ Set up the pre-commit hook for consistent code quality:
 pre-commit install
 ```
 
-It will run Ruff check and formatting before every commit.
+It will run Ruff check, formatting and GitLeaks inspection before every commit.
 
 ---
 
