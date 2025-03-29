@@ -26,7 +26,9 @@ A modern Django project blueprint designed with developer productivity and best 
 2. Run Docker:
 
 ```bash
-docker compose up --build
+docker compose build
+docker compose run migrate
+docker compose up
 ```
 
 Django will be available at: http://localhost:8000
