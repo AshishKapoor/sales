@@ -6,6 +6,7 @@ ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 
 COPY entrypoint.sh /entrypoint.sh
+COPY entrypoint.migrate.sh /entrypoint.migrate.sh
 
 RUN apt-get update && \
     apt-get install -y libpq-dev gcc build-essential curl && \
@@ -29,5 +30,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 8000
 
 
-# CMD ["sh", "-c", "/usr/local/bin/wait-for-it.sh db:5432 -- uv run manage.py migrate && uv run manage.py runserver 0.0.0.0:8000"]
 ENTRYPOINT ["/entrypoint.sh"]

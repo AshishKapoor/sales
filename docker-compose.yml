@@ -2,11 +2,27 @@ services:
   web:
     build:
       context: .
-    command: sh -c "wait-for-it.sh db:5432 -- uv run manage.py migrate && uv run manage.py runserver 0.0.0.0:8000"
+    command: sh -c "make run"
     volumes:
       - .:/app
     ports:
       - "8000:8000"
+    env_file:
+      - .env.dev
+    environment:
+      - DJANGO_SETTINGS_MODULE=app.settings.dev
+    depends_on:
+      - db
+    networks:
+      - django_network
+
+  migrate:
+    profiles: ["migrate"]
+    build:
+      context: .
+    entrypoint: ["/entrypoint.migrate.sh"]
+    volumes:
+      - .:/app
     env_file:
       - .env.dev
     environment:
