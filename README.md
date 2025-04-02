@@ -1,4 +1,4 @@
-# 🚀 Advanced Django Blueprint
+# 🚀 Create DRF App
 
 A modern Django project blueprint designed with developer productivity and best practices in mind.
 
