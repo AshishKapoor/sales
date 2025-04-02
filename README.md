@@ -1,6 +1,6 @@
 # 🚀 Create DRF App
 
-A modern Django project blueprint designed with developer productivity and best practices in mind.
+A DRF designed with developer productivity and best practices in mind.
 
 ## 🧩 Features
 
@@ -124,3 +124,5 @@ OpenAPI documentation is powered by `drf-spectacular`:
 - `/api/docs/` – Swagger UI
 
 ---
+
+Originally from @saba-ab
