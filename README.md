@@ -125,4 +125,5 @@ OpenAPI documentation is powered by `drf-spectacular`:
 
 ---
 
-Originally from @saba-ab
+Purely inspired from
+https://github.com/saba-ab/advanced_django_blueprint
