@@ -8,7 +8,6 @@ A modern Django project blueprint designed with developer productivity and best 
 - ✅ PostgreSQL as default database
 - ✅ DRF (Django REST Framework) for API development
 - ✅ OpenAPI documentation using drf-spectacular
-- ✅ Django Unfold for a beautiful admin UI
 - ✅ Psycopg 3 integration (PostgreSQL adapter)
 - ✅ Ruff for linting and formatting
 - ✅ Pre-commit hook to enforce code style
@@ -117,20 +116,6 @@ Example `docker-compose.yml` connects the Django app to a PostgreSQL container.
 
 ---
 
-## ✨ Admin UI
-
-Admin is powered by [Django Unfold](https://github.com/unfoldadmin/unfold):
-
-```python
-from unfold.admin import ModelAdmin
-
-@admin.register(MyModel)
-class MyModelAdmin(ModelAdmin):
-    pass
-```
-
----
-
 ## 📚 API Docs
 
 OpenAPI documentation is powered by `drf-spectacular`:
@@ -139,7 +124,3 @@ OpenAPI documentation is powered by `drf-spectacular`:
 - `/api/docs/` – Swagger UI
 
 ---
-
-## 👤 Author
-
-Made with ❤️ by [Saba Abzhandadze](https://github.com/saba-ab)

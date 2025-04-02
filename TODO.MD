@@ -2,7 +2,6 @@
 
 - Swagger/OpenAPI integration
 - Pre-commit hooks setup
-- Django admin customization with Unfold
 - README.MD documentation
 
 ## Authentication & Authorization
