@@ -16,9 +16,13 @@ dependencies = [
     "django-cryptography>=1.1",
     "psycopg2-binary>=2.9.9"
 ]
+packages = [
+    { include = "app" },
+    { include = "core" }
+]
 
 [tool.poetry]
-package-mode = false
+package-mode = true
 
 
 [tool.ruff]
