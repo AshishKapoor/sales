@@ -11,6 +11,9 @@ class User(AbstractUser):
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='sales_rep')
 
+    def __str__(self):
+        return f"{self.get_full_name() or self.username} ({self.get_role_display()})"
+
 # 2. Lead
 class Lead(models.Model):
     STATUS_CHOICES = [
@@ -30,6 +33,10 @@ class Lead(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        company_part = f" ({self.company})" if self.company else ""
+        return f"{self.name}{company_part} - {self.get_status_display()}"
+
 # 3. Account
 class Account(models.Model):
     name = models.CharField(max_length=255)
@@ -39,6 +46,10 @@ class Account(models.Model):
     website = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        industry_part = f" ({self.industry})" if self.industry else ""
+        return f"{self.name}{industry_part}"
+
 # 4. Contact
 class Contact(models.Model):
     name = models.CharField(max_length=255)
@@ -47,6 +58,10 @@ class Contact(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='contacts')
     title = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        title_part = f" ({self.title})" if self.title else ""
+        return f"{self.name}{title_part} at {self.account.name}"
 
 # 5. Opportunity (aka Deal)
 class Opportunity(models.Model):
@@ -65,6 +80,9 @@ class Opportunity(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='opportunities')
     close_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - ${self.amount:,.2f} ({self.get_stage_display()})"
 
 # 6. Task (e.g. call, follow-up, meeting)
 class Task(models.Model):
@@ -88,6 +106,9 @@ class Task(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     notes = models.TextField(blank=True)
 
+    def __str__(self):
+        return f"{self.title} ({self.get_type_display()}) - {self.get_status_display()}"
+
 # 7. InteractionLog (Activity History)
 class InteractionLog(models.Model):
     TYPE_CHOICES = [
@@ -103,6 +124,10 @@ class InteractionLog(models.Model):
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     summary = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        target = self.lead or self.contact or self.opportunity or "Unknown"
+        return f"{self.get_type_display()} with {target} by {self.user.username}"
 
 # 8. Product
 class Product(models.Model):
@@ -124,13 +149,33 @@ class Quote(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(blank=True)
 
+    def calculate_total_price(self):
+        """Calculate total price from all line items."""
+        total = sum(item.total_price for item in self.line_items.all())
+        return total
+
+    def update_total_price(self):
+        """Update the total_price field with calculated value."""
+        self.total_price = self.calculate_total_price()
+        self.save(update_fields=['total_price'])
+
+    def __str__(self):
+        return f"{self.title} - {self.total_price}"
+
 # 10. QuoteLineItem
 class QuoteLineItem(models.Model):
     quote = models.ForeignKey(Quote, on_delete=models.CASCADE, related_name='line_items')
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(default=1)
-    unit_price = models.DecimalField(max_digits=12, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
 
     @property
     def total_price(self):
+        """Calculate total price for this line item."""
+        if self.unit_price is None:
+            return 0
         return self.quantity * self.unit_price
+
+    def __str__(self):
+        product_name = self.product.name if self.product else "No Product"
+        return f"{product_name} x {self.quantity} @ {self.unit_price}"
