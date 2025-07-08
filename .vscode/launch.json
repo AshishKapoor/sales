@@ -1,0 +1,129 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Django: Debug Server",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "args": ["runserver", "127.0.0.1:8000"],
+      "django": true,
+      "env": {
+        "DJANGO_SETTINGS_MODULE": "app.settings.dev"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "autoReload": {
+        "enable": true
+      }
+    },
+    {
+      "name": "Django: Debug Server (No Reload)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "args": ["runserver", "--noreload", "127.0.0.1:8000"],
+      "django": true,
+      "env": {
+        "DJANGO_SETTINGS_MODULE": "app.settings.dev"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Debug Tests",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "args": ["test"],
+      "django": true,
+      "env": {
+        "DJANGO_SETTINGS_MODULE": "app.settings.dev"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Debug Specific Test",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "args": ["test", "${input:testPath}"],
+      "django": true,
+      "env": {
+        "DJANGO_SETTINGS_MODULE": "app.settings.dev"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Debug Management Command",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "args": ["${input:managementCommand}"],
+      "django": true,
+      "env": {
+        "DJANGO_SETTINGS_MODULE": "app.settings.dev"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Debug Migrations",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "args": ["migrate"],
+      "django": true,
+      "env": {
+        "DJANGO_SETTINGS_MODULE": "app.settings.dev"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Debug Shell",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "args": ["shell"],
+      "django": true,
+      "env": {
+        "DJANGO_SETTINGS_MODULE": "app.settings.dev"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "console": "integratedTerminal",
+      "justMyCode": false
+    }
+  ],
+  "inputs": [
+    {
+      "id": "testPath",
+      "description": "Enter the test path (e.g., core.tests.test_models)",
+      "default": "core.tests",
+      "type": "promptString"
+    },
+    {
+      "id": "managementCommand",
+      "description": "Enter the Django management command",
+      "default": "shell",
+      "type": "promptString"
+    }
+  ]
+}
