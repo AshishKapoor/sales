@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
 from .models import (
-    Account, Lead, Opportunity, Task, InteractionLog,
-    Cookbook, CookbookActivity, CookbookAssignment, ActivityProgress
+    Account, Contact, Lead, Opportunity, Task, InteractionLog,
+    Product, Quote, QuoteLineItem
 )
 
 User = get_user_model()
@@ -24,66 +24,75 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ('name', 'industry', 'company_size', 'location', 'created_at')
-    list_filter = ('industry', 'company_size', 'created_at')
-    search_fields = ('name', 'industry', 'location')
+    list_display = ('name', 'industry', 'size', 'location', 'website', 'created_at')
+    list_filter = ('industry', 'size', 'created_at')
+    search_fields = ('name', 'industry', 'location', 'website')
+    readonly_fields = ('created_at',)
+
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'phone', 'account', 'title', 'created_at')
+    list_filter = ('account', 'created_at')
+    search_fields = ('name', 'email', 'phone', 'title', 'account__name')
     readonly_fields = ('created_at',)
 
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'company', 'status', 'assigned_to', 'created_at')
-    list_filter = ('status', 'assigned_to', 'source', 'created_at')
+    list_display = ('name', 'email', 'company', 'status', 'assigned_to', 'created_at', 'updated_at')
+    list_filter = ('status', 'assigned_to', 'source', 'created_at', 'updated_at')
     search_fields = ('name', 'email', 'company')
-    readonly_fields = ('created_at',)
+    readonly_fields = ('created_at', 'updated_at')
 
 
 @admin.register(Opportunity)
 class OpportunityAdmin(admin.ModelAdmin):
-    list_display = ('title', 'account', 'amount', 'stage', 'owner', 'expected_close_date', 'created_at')
+    list_display = ('name', 'account', 'contact', 'amount', 'stage', 'owner', 'close_date', 'created_at')
     list_filter = ('stage', 'owner', 'created_at')
-    search_fields = ('title', 'account__name', 'contact_email')
+    search_fields = ('name', 'account__name', 'contact__name', 'contact__email')
     readonly_fields = ('created_at',)
 
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('title', 'task_type', 'due_date', 'status', 'owner')
-    list_filter = ('task_type', 'status', 'due_date', 'owner')
+    list_display = ('title', 'type', 'due_date', 'status', 'owner', 'related_lead', 'related_opportunity')
+    list_filter = ('type', 'status', 'due_date', 'owner')
     search_fields = ('title', 'notes')
 
 
 @admin.register(InteractionLog)
 class InteractionLogAdmin(admin.ModelAdmin):
-    list_display = ('user', 'type', 'lead', 'opportunity', 'timestamp')
+    list_display = ('user', 'type', 'lead', 'contact', 'opportunity', 'timestamp')
     list_filter = ('type', 'user', 'timestamp')
     search_fields = ('summary',)
     readonly_fields = ('timestamp',)
 
 
-@admin.register(Cookbook)
-class CookbookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'created_by', 'created_at')
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'currency', 'is_active')
+    list_filter = ('currency', 'is_active')
+    search_fields = ('name', 'description')
+
+
+class QuoteLineItemInline(admin.TabularInline):
+    model = QuoteLineItem
+    extra = 1
+    readonly_fields = ('total_price',)
+
+
+@admin.register(Quote)
+class QuoteAdmin(admin.ModelAdmin):
+    list_display = ('title', 'opportunity', 'total_price', 'created_by', 'created_at')
     list_filter = ('created_by', 'created_at')
-    search_fields = ('title', 'description')
-    readonly_fields = ('created_at',)
+    search_fields = ('title', 'opportunity__name', 'notes')
+    readonly_fields = ('created_at', 'total_price')
+    inlines = [QuoteLineItemInline]
 
 
-@admin.register(CookbookActivity)
-class CookbookActivityAdmin(admin.ModelAdmin):
-    list_display = ('title', 'cookbook', 'frequency', 'target_count')
-    list_filter = ('frequency', 'cookbook')
-    search_fields = ('title', 'description')
-
-
-@admin.register(CookbookAssignment)
-class CookbookAssignmentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'cookbook', 'start_date')
-    list_filter = ('user', 'cookbook', 'start_date')
-
-
-@admin.register(ActivityProgress)
-class ActivityProgressAdmin(admin.ModelAdmin):
-    list_display = ('assignment', 'activity', 'date', 'count_done')
-    list_filter = ('date', 'assignment__user', 'activity')
-    readonly_fields = ('assignment', 'activity')
+@admin.register(QuoteLineItem)
+class QuoteLineItemAdmin(admin.ModelAdmin):
+    list_display = ('quote', 'product', 'quantity', 'unit_price', 'total_price')
+    list_filter = ('quote', 'product')
+    readonly_fields = ('total_price',)

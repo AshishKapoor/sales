@@ -2,7 +2,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# 1. Custom User
+# 1. User
 class User(AbstractUser):
     ROLE_CHOICES = [
         ('admin', 'Admin'),
@@ -11,18 +11,7 @@ class User(AbstractUser):
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='sales_rep')
 
-# 2. Account
-class Account(models.Model):
-    name = models.CharField(max_length=255)
-    industry = models.CharField(max_length=255, blank=True, null=True)
-    company_size = models.CharField(max_length=100, blank=True, null=True)
-    location = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
-
-# 3. Lead
+# 2. Lead
 class Lead(models.Model):
     STATUS_CHOICES = [
         ('new', 'New'),
@@ -35,16 +24,31 @@ class Lead(models.Model):
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True)
     company = models.CharField(max_length=255, blank=True)
-    source = models.CharField(max_length=100, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
-    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="leads")
-    account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True)
+    source = models.CharField(max_length=100, blank=True)
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='leads')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+# 3. Account
+class Account(models.Model):
+    name = models.CharField(max_length=255)
+    industry = models.CharField(max_length=255, blank=True)
+    size = models.CharField(max_length=100, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    website = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.name} - {self.status}"
+# 4. Contact
+class Contact(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='contacts')
+    title = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-# 4. Opportunity
+# 5. Opportunity (aka Deal)
 class Opportunity(models.Model):
     STAGE_CHOICES = [
         ('qualification', 'Qualification'),
@@ -53,24 +57,18 @@ class Opportunity(models.Model):
         ('won', 'Closed Won'),
         ('lost', 'Closed Lost'),
     ]
-    title = models.CharField(max_length=255)
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    contact_email = models.EmailField()
+    name = models.CharField(max_length=255)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='opportunities')
+    contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     stage = models.CharField(max_length=20, choices=STAGE_CHOICES, default='qualification')
-    expected_close_date = models.DateField(null=True, blank=True)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="opportunities")
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='opportunities')
+    close_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.title} - {self.account.name} - ${self.amount}"
-
-    class Meta:
-        verbose_name_plural = "Opportunities"
-
-# 5. Task
+# 6. Task (e.g. call, follow-up, meeting)
 class Task(models.Model):
-    TASK_TYPE_CHOICES = [
+    TYPE_CHOICES = [
         ('call', 'Call'),
         ('email', 'Email'),
         ('meeting', 'Meeting'),
@@ -82,76 +80,57 @@ class Task(models.Model):
         ('overdue', 'Overdue'),
     ]
     title = models.CharField(max_length=255)
-    task_type = models.CharField(max_length=20, choices=TASK_TYPE_CHOICES)
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     due_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, null=True, blank=True)
-    opportunity = models.ForeignKey(Opportunity, on_delete=models.CASCADE, null=True, blank=True)
+    related_lead = models.ForeignKey(Lead, on_delete=models.SET_NULL, null=True, blank=True)
+    related_opportunity = models.ForeignKey(Opportunity, on_delete=models.SET_NULL, null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     notes = models.TextField(blank=True)
 
-    def __str__(self):
-        return f"{self.title} - {self.task_type} - {self.due_date}"
-
-# 6. InteractionLog
+# 7. InteractionLog (Activity History)
 class InteractionLog(models.Model):
     TYPE_CHOICES = [
         ('call', 'Call'),
         ('email', 'Email'),
-        ('note', 'Note'),
         ('meeting', 'Meeting'),
+        ('note', 'Note'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, null=True, blank=True)
-    opportunity = models.ForeignKey(Opportunity, on_delete=models.CASCADE, null=True, blank=True)
+    lead = models.ForeignKey(Lead, on_delete=models.SET_NULL, null=True, blank=True)
+    contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True, blank=True)
+    opportunity = models.ForeignKey(Opportunity, on_delete=models.SET_NULL, null=True, blank=True)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     summary = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.type} - {self.user.username} - {self.timestamp.date()}"
-
-# 7. Cookbook
-class Cookbook(models.Model):
-    title = models.CharField(max_length=255)
+# 8. Product
+class Product(models.Model):
+    name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+    currency = models.CharField(max_length=10, default='USD')
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.currency} {self.price})"
+
+# 9. Quote
+class Quote(models.Model):
+    opportunity = models.ForeignKey(Opportunity, on_delete=models.CASCADE, related_name='quotes')
+    title = models.CharField(max_length=255)
+    total_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True)
 
-    def __str__(self):
-        return self.title
+# 10. QuoteLineItem
+class QuoteLineItem(models.Model):
+    quote = models.ForeignKey(Quote, on_delete=models.CASCADE, related_name='line_items')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    quantity = models.PositiveIntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2)
 
-# 8. CookbookActivity
-class CookbookActivity(models.Model):
-    FREQUENCY_CHOICES = [
-        ('daily', 'Daily'),
-        ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'),
-    ]
-    cookbook = models.ForeignKey(Cookbook, on_delete=models.CASCADE, related_name="activities")
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES)
-    target_count = models.IntegerField(default=1)
-
-    def __str__(self):
-        return f"{self.title} ({self.cookbook.title})"
-
-# 9. CookbookAssignment
-class CookbookAssignment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    cookbook = models.ForeignKey(Cookbook, on_delete=models.CASCADE)
-    start_date = models.DateField()
-
-    def __str__(self):
-        return f"{self.user.username} - {self.cookbook.title}"
-
-# 10. ActivityProgress
-class ActivityProgress(models.Model):
-    assignment = models.ForeignKey(CookbookAssignment, on_delete=models.CASCADE)
-    activity = models.ForeignKey(CookbookActivity, on_delete=models.CASCADE)
-    date = models.DateField()
-    count_done = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.activity.title} - {self.date} - {self.count_done}/{self.activity.target_count}"
+    @property
+    def total_price(self):
+        return self.quantity * self.unit_price

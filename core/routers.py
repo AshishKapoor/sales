@@ -1,8 +1,7 @@
 from rest_framework.routers import DefaultRouter
 from .views import (
-    UserViewSet, AccountViewSet, LeadViewSet, OpportunityViewSet,
-    TaskViewSet, InteractionLogViewSet, CookbookViewSet,
-    CookbookActivityViewSet, CookbookAssignmentViewSet, ActivityProgressViewSet
+    UserViewSet, AccountViewSet, ContactViewSet, LeadViewSet, OpportunityViewSet,
+    TaskViewSet, InteractionLogViewSet, ProductViewSet, QuoteViewSet, QuoteLineItemViewSet
 )
 
 router = DefaultRouter()
@@ -12,15 +11,15 @@ router.register('users', UserViewSet, basename='user')
 
 # Core sales entities
 router.register('accounts', AccountViewSet, basename='account')
+router.register('contacts', ContactViewSet, basename='contact')
 router.register('leads', LeadViewSet, basename='lead')
 router.register('opportunities', OpportunityViewSet, basename='opportunity')
 router.register('tasks', TaskViewSet, basename='task')
 router.register('interactions', InteractionLogViewSet, basename='interaction')
 
-# Sales cookbook
-router.register('cookbooks', CookbookViewSet, basename='cookbook')
-router.register('cookbook-activities', CookbookActivityViewSet, basename='cookbook-activity')
-router.register('cookbook-assignments', CookbookAssignmentViewSet, basename='cookbook-assignment')
-router.register('activity-progress', ActivityProgressViewSet, basename='activity-progress')
+# Products and Quotes
+router.register('products', ProductViewSet, basename='product')
+router.register('quotes', QuoteViewSet, basename='quote')
+router.register('quote-line-items', QuoteLineItemViewSet, basename='quote-line-item')
 
 urlpatterns = router.urls
