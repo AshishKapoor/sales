@@ -1,18 +1,45 @@
 services:
-  web:
+  nginx:
+    image: nginx:1.25
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - django_network
+
+  backend:
     build:
       context: .
-    command: sh -c "make run"
+    entrypoint: ["/entrypoint.sh"]
     volumes:
       - .:/app
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     env_file:
       - .env.dev
     environment:
       - DJANGO_SETTINGS_MODULE=app.settings.dev
     depends_on:
       - db
+    networks:
+      - django_network
+
+  frontend:
+    build:
+      context: ./web-ui
+      dockerfile: Dockerfile
+    volumes:
+      - ./web-ui:/app
+      - /app/node_modules
+      - /app/.next
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=development
     networks:
       - django_network
 
