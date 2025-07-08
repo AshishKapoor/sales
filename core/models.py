@@ -41,6 +41,9 @@ class Lead(models.Model):
     account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.name} - {self.status}"
+
 # 4. Opportunity
 class Opportunity(models.Model):
     STAGE_CHOICES = [
@@ -58,6 +61,12 @@ class Opportunity(models.Model):
     expected_close_date = models.DateField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="opportunities")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.account.name} - ${self.amount}"
+
+    class Meta:
+        verbose_name_plural = "Opportunities"
 
 # 5. Task
 class Task(models.Model):
@@ -81,6 +90,9 @@ class Task(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     notes = models.TextField(blank=True)
 
+    def __str__(self):
+        return f"{self.title} - {self.task_type} - {self.due_date}"
+
 # 6. InteractionLog
 class InteractionLog(models.Model):
     TYPE_CHOICES = [
@@ -96,12 +108,18 @@ class InteractionLog(models.Model):
     summary = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.type} - {self.user.username} - {self.timestamp.date()}"
+
 # 7. Cookbook
 class Cookbook(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 
 # 8. CookbookActivity
 class CookbookActivity(models.Model):
@@ -116,11 +134,17 @@ class CookbookActivity(models.Model):
     frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES)
     target_count = models.IntegerField(default=1)
 
+    def __str__(self):
+        return f"{self.title} ({self.cookbook.title})"
+
 # 9. CookbookAssignment
 class CookbookAssignment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cookbook = models.ForeignKey(Cookbook, on_delete=models.CASCADE)
     start_date = models.DateField()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.cookbook.title}"
 
 # 10. ActivityProgress
 class ActivityProgress(models.Model):
@@ -128,3 +152,6 @@ class ActivityProgress(models.Model):
     activity = models.ForeignKey(CookbookActivity, on_delete=models.CASCADE)
     date = models.DateField()
     count_done = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.activity.title} - {self.date} - {self.count_done}/{self.activity.target_count}"

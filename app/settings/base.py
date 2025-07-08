@@ -33,8 +33,8 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Anton API',
-    'DESCRIPTION': 'Anton API Documentation',
+    'TITLE': 'Sales Cookbook API',
+    'DESCRIPTION': 'Sales Cookbook API Documentation - A comprehensive sales management system',
     'VERSION': '1.0.0',
     "SERVE_INCLUDE_SCHEMA": False,
     'SWAGGER_UI_DIST': 'SIDECAR',
@@ -109,3 +109,6 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Custom User Model
+AUTH_USER_MODEL = 'core.User'
