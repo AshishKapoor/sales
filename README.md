@@ -1,6 +1,5 @@
-# 🚀 Create DRF App
-
-A DRF designed with developer productivity and best practices in mind.
+# 🚀 Sales CRM
+![Screenshot 2025-07-09 at 12 45 59 AM](https://github.com/user-attachments/assets/1fdedbad-36c7-48b6-a57f-ffa040569b0c)
 
 ## 🧩 Features
 
