@@ -1,9 +1,23 @@
-from rest_framework import generics, permissions
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+
+
+from datetime import date
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from .serializers import UserRegistrationSerializer, UserProfileSerializer, ChangePasswordSerializer
+from rest_framework import generics, permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import (
+    Account, Contact, Lead, Opportunity, Task, InteractionLog,
+    Product, Quote, QuoteLineItem
+)
+from .serializers import (
+    UserRegistrationSerializer, UserProfileSerializer,
+    UserSerializer, AccountSerializer, ContactSerializer, LeadSerializer, OpportunitySerializer,
+    TaskSerializer, InteractionLogSerializer, ProductSerializer, QuoteSerializer, QuoteLineItemSerializer
+)
 
 # --- Auth Views ---
 class RegisterUserAPIView(generics.CreateAPIView):
@@ -62,29 +76,14 @@ class ChangePasswordView(APIView):
         user.set_password(new_password)
         user.save()
         return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import get_user_model
-from django.db.models import Q
-from datetime import date
-from .models import (
-    Account, Contact, Lead, Opportunity, Task, InteractionLog,
-    Product, Quote, QuoteLineItem
-)
-from .serializers import (
-    UserSerializer, AccountSerializer, ContactSerializer, LeadSerializer, OpportunitySerializer,
-    TaskSerializer, InteractionLogSerializer, ProductSerializer, QuoteSerializer, QuoteLineItemSerializer
-)
 
 User = get_user_model()
-
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None  # Disable pagination for user APIs
 
     def get_queryset(self):
         # Managers and admins can see all users, sales reps only see themselves

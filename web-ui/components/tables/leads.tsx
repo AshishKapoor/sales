@@ -46,9 +46,10 @@ import { toast } from "sonner";
 export default function LeadsTable() {
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [newLead, setNewLead] = useState<Partial<Lead>>({});
+  const [page, setPage] = useState(1);
 
   // Fetch leads using SWR
-  const { data, isLoading, error } = useV1LeadsList();
+  const { data, isLoading, error } = useV1LeadsList({ page });
 
   // SWR Mutations
   const { trigger: createLead, isMutating: isCreating } = useV1LeadsCreate();
@@ -183,7 +184,7 @@ export default function LeadsTable() {
   );
 
   const table = useReactTable({
-    data: data || [],
+    data: data?.results || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -483,6 +484,43 @@ export default function LeadsTable() {
           </div>
         </CardContent>
       </Card>
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-end mt-4 gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+        >
+          Previous
+        </Button>
+        <span className="text-sm">
+          Page {page}
+          {data?.count && data?.results?.length
+            ? ` of ${Math.ceil(data.count / data.results.length)}`
+            : ""}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() =>
+            setPage((p) =>
+              data?.count &&
+              data?.results?.length &&
+              p < Math.ceil(data.count / data.results.length)
+                ? p + 1
+                : p
+            )
+          }
+          disabled={
+            !data?.count ||
+            !data?.results?.length ||
+            page >= Math.ceil(data.count / data.results.length)
+          }
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 }

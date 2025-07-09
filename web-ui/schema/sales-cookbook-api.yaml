@@ -2,1685 +2,1884 @@ openapi: 3.0.3
 info:
   title: Sales Cookbook API
   version: 1.0.0
-  description:
-    Sales Cookbook API Documentation - A comprehensive sales management
+  description: Sales Cookbook API Documentation - A comprehensive sales management
     system
 paths:
-  /api/v1/accounts/:
-    get:
-      operationId: v1_accounts_list
-      tags:
-        - v1
-      security:
-        - cookieAuth: []
-        - basicAuth: []
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Account"
-          description: ""
+  /api/token/:
     post:
-      operationId: v1_accounts_create
+      operationId: token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
       tags:
-        - v1
+      - token
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Account"
+              $ref: '#/components/schemas/TokenObtainPair'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Account"
+              $ref: '#/components/schemas/TokenObtainPair'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Account"
+              $ref: '#/components/schemas/TokenObtainPair'
         required: true
-      security:
-        - cookieAuth: []
-        - basicAuth: []
       responses:
-        "201":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Account"
-          description: ""
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/accounts/:
+    get:
+      operationId: v1_accounts_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - v1
+      security:
+      - tokenAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAccountList'
+          description: ''
+    post:
+      operationId: v1_accounts_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Account'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Account'
+        required: true
+      security:
+      - tokenAuth: []
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+          description: ''
   /api/v1/accounts/{id}/:
     get:
       operationId: v1_accounts_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this account.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this account.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Account"
-          description: ""
+                $ref: '#/components/schemas/Account'
+          description: ''
     put:
       operationId: v1_accounts_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this account.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this account.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Account"
+              $ref: '#/components/schemas/Account'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Account"
+              $ref: '#/components/schemas/Account'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Account"
+              $ref: '#/components/schemas/Account'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Account"
-          description: ""
+                $ref: '#/components/schemas/Account'
+          description: ''
     patch:
       operationId: v1_accounts_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this account.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this account.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedAccount"
+              $ref: '#/components/schemas/PatchedAccount'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedAccount"
+              $ref: '#/components/schemas/PatchedAccount'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedAccount"
+              $ref: '#/components/schemas/PatchedAccount'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Account"
-          description: ""
+                $ref: '#/components/schemas/Account'
+          description: ''
     delete:
       operationId: v1_accounts_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this account.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this account.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
   /api/v1/accounts/{id}/contacts/:
     get:
       operationId: v1_accounts_contacts_retrieve
       description: Get all contacts associated with this account
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this account.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this account.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Account"
-          description: ""
+                $ref: '#/components/schemas/Account'
+          description: ''
   /api/v1/accounts/{id}/opportunities/:
     get:
       operationId: v1_accounts_opportunities_retrieve
       description: Get all opportunities associated with this account
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this account.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this account.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Account"
-          description: ""
+                $ref: '#/components/schemas/Account'
+          description: ''
+  /api/v1/change-password/:
+    post:
+      operationId: v1_change_password_create
+      tags:
+      - v1
+      security:
+      - tokenAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/v1/contacts/:
     get:
       operationId: v1_contacts_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Contact"
-          description: ""
+                $ref: '#/components/schemas/PaginatedContactList'
+          description: ''
     post:
       operationId: v1_contacts_create
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Contact"
+              $ref: '#/components/schemas/Contact'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Contact"
+              $ref: '#/components/schemas/Contact'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Contact"
+              $ref: '#/components/schemas/Contact'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Contact"
-          description: ""
+                $ref: '#/components/schemas/Contact'
+          description: ''
   /api/v1/contacts/{id}/:
     get:
       operationId: v1_contacts_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this contact.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this contact.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Contact"
-          description: ""
+                $ref: '#/components/schemas/Contact'
+          description: ''
     put:
       operationId: v1_contacts_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this contact.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this contact.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Contact"
+              $ref: '#/components/schemas/Contact'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Contact"
+              $ref: '#/components/schemas/Contact'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Contact"
+              $ref: '#/components/schemas/Contact'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Contact"
-          description: ""
+                $ref: '#/components/schemas/Contact'
+          description: ''
     patch:
       operationId: v1_contacts_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this contact.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this contact.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedContact"
+              $ref: '#/components/schemas/PatchedContact'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedContact"
+              $ref: '#/components/schemas/PatchedContact'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedContact"
+              $ref: '#/components/schemas/PatchedContact'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Contact"
-          description: ""
+                $ref: '#/components/schemas/Contact'
+          description: ''
     delete:
       operationId: v1_contacts_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this contact.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this contact.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
   /api/v1/interactions/:
     get:
       operationId: v1_interactions_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/InteractionLog"
-          description: ""
+                $ref: '#/components/schemas/PaginatedInteractionLogList'
+          description: ''
     post:
       operationId: v1_interactions_create
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/InteractionLog"
+              $ref: '#/components/schemas/InteractionLog'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/InteractionLog"
+              $ref: '#/components/schemas/InteractionLog'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/InteractionLog"
+              $ref: '#/components/schemas/InteractionLog'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InteractionLog"
-          description: ""
+                $ref: '#/components/schemas/InteractionLog'
+          description: ''
   /api/v1/interactions/{id}/:
     get:
       operationId: v1_interactions_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this interaction log.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this interaction log.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InteractionLog"
-          description: ""
+                $ref: '#/components/schemas/InteractionLog'
+          description: ''
     put:
       operationId: v1_interactions_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this interaction log.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this interaction log.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/InteractionLog"
+              $ref: '#/components/schemas/InteractionLog'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/InteractionLog"
+              $ref: '#/components/schemas/InteractionLog'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/InteractionLog"
+              $ref: '#/components/schemas/InteractionLog'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InteractionLog"
-          description: ""
+                $ref: '#/components/schemas/InteractionLog'
+          description: ''
     patch:
       operationId: v1_interactions_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this interaction log.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this interaction log.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedInteractionLog"
+              $ref: '#/components/schemas/PatchedInteractionLog'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedInteractionLog"
+              $ref: '#/components/schemas/PatchedInteractionLog'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedInteractionLog"
+              $ref: '#/components/schemas/PatchedInteractionLog'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InteractionLog"
-          description: ""
+                $ref: '#/components/schemas/InteractionLog'
+          description: ''
     delete:
       operationId: v1_interactions_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this interaction log.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this interaction log.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
   /api/v1/leads/:
     get:
       operationId: v1_leads_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Lead"
-          description: ""
+                $ref: '#/components/schemas/PaginatedLeadList'
+          description: ''
     post:
       operationId: v1_leads_create
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Lead"
+              $ref: '#/components/schemas/Lead'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Lead"
+              $ref: '#/components/schemas/Lead'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Lead"
+              $ref: '#/components/schemas/Lead'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Lead"
-          description: ""
+                $ref: '#/components/schemas/Lead'
+          description: ''
   /api/v1/leads/{id}/:
     get:
       operationId: v1_leads_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this lead.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this lead.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Lead"
-          description: ""
+                $ref: '#/components/schemas/Lead'
+          description: ''
     put:
       operationId: v1_leads_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this lead.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this lead.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Lead"
+              $ref: '#/components/schemas/Lead'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Lead"
+              $ref: '#/components/schemas/Lead'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Lead"
+              $ref: '#/components/schemas/Lead'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Lead"
-          description: ""
+                $ref: '#/components/schemas/Lead'
+          description: ''
     patch:
       operationId: v1_leads_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this lead.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this lead.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedLead"
+              $ref: '#/components/schemas/PatchedLead'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedLead"
+              $ref: '#/components/schemas/PatchedLead'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedLead"
+              $ref: '#/components/schemas/PatchedLead'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Lead"
-          description: ""
+                $ref: '#/components/schemas/Lead'
+          description: ''
     delete:
       operationId: v1_leads_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this lead.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this lead.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
   /api/v1/leads/{id}/convert_to_opportunity/:
     post:
       operationId: v1_leads_convert_to_opportunity_create
       description: Convert a lead to an opportunity
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this lead.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this lead.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Lead"
+              $ref: '#/components/schemas/Lead'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Lead"
+              $ref: '#/components/schemas/Lead'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Lead"
+              $ref: '#/components/schemas/Lead'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Lead"
-          description: ""
+                $ref: '#/components/schemas/Lead'
+          description: ''
+  /api/v1/me/:
+    get:
+      operationId: v1_me_retrieve
+      tags:
+      - v1
+      security:
+      - tokenAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/v1/opportunities/:
     get:
       operationId: v1_opportunities_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Opportunity"
-          description: ""
+                $ref: '#/components/schemas/PaginatedOpportunityList'
+          description: ''
     post:
       operationId: v1_opportunities_create
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Opportunity"
+              $ref: '#/components/schemas/Opportunity'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Opportunity"
+              $ref: '#/components/schemas/Opportunity'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Opportunity"
+              $ref: '#/components/schemas/Opportunity'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Opportunity"
-          description: ""
+                $ref: '#/components/schemas/Opportunity'
+          description: ''
   /api/v1/opportunities/{id}/:
     get:
       operationId: v1_opportunities_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this opportunity.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this opportunity.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Opportunity"
-          description: ""
+                $ref: '#/components/schemas/Opportunity'
+          description: ''
     put:
       operationId: v1_opportunities_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this opportunity.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this opportunity.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Opportunity"
+              $ref: '#/components/schemas/Opportunity'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Opportunity"
+              $ref: '#/components/schemas/Opportunity'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Opportunity"
+              $ref: '#/components/schemas/Opportunity'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Opportunity"
-          description: ""
+                $ref: '#/components/schemas/Opportunity'
+          description: ''
     patch:
       operationId: v1_opportunities_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this opportunity.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this opportunity.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedOpportunity"
+              $ref: '#/components/schemas/PatchedOpportunity'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedOpportunity"
+              $ref: '#/components/schemas/PatchedOpportunity'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedOpportunity"
+              $ref: '#/components/schemas/PatchedOpportunity'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Opportunity"
-          description: ""
+                $ref: '#/components/schemas/Opportunity'
+          description: ''
     delete:
       operationId: v1_opportunities_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this opportunity.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this opportunity.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
   /api/v1/opportunities/{id}/quotes/:
     get:
       operationId: v1_opportunities_quotes_retrieve
       description: Get all quotes for this opportunity
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this opportunity.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this opportunity.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Opportunity"
-          description: ""
+                $ref: '#/components/schemas/Opportunity'
+          description: ''
   /api/v1/opportunities/pipeline_value/:
     get:
       operationId: v1_opportunities_pipeline_value_retrieve
       description: Get total pipeline value
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Opportunity"
-          description: ""
+                $ref: '#/components/schemas/Opportunity'
+          description: ''
   /api/v1/products/:
     get:
       operationId: v1_products_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Product"
-          description: ""
+                $ref: '#/components/schemas/PaginatedProductList'
+          description: ''
     post:
       operationId: v1_products_create
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Product"
+              $ref: '#/components/schemas/Product'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Product"
+              $ref: '#/components/schemas/Product'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Product"
+              $ref: '#/components/schemas/Product'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Product"
-          description: ""
+                $ref: '#/components/schemas/Product'
+          description: ''
   /api/v1/products/{id}/:
     get:
       operationId: v1_products_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this product.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Product"
-          description: ""
+                $ref: '#/components/schemas/Product'
+          description: ''
     put:
       operationId: v1_products_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this product.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Product"
+              $ref: '#/components/schemas/Product'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Product"
+              $ref: '#/components/schemas/Product'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Product"
+              $ref: '#/components/schemas/Product'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Product"
-          description: ""
+                $ref: '#/components/schemas/Product'
+          description: ''
     patch:
       operationId: v1_products_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this product.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedProduct"
+              $ref: '#/components/schemas/PatchedProduct'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedProduct"
+              $ref: '#/components/schemas/PatchedProduct'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedProduct"
+              $ref: '#/components/schemas/PatchedProduct'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Product"
-          description: ""
+                $ref: '#/components/schemas/Product'
+          description: ''
     delete:
       operationId: v1_products_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this product.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
-  /api/v1/quote-line-items/:
-    get:
-      operationId: v1_quote_line_items_list
+  /api/v1/profile/update/:
+    put:
+      operationId: v1_profile_update_update
       tags:
-        - v1
-      security:
-        - cookieAuth: []
-        - basicAuth: []
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/QuoteLineItem"
-          description: ""
-    post:
-      operationId: v1_quote_line_items_create
-      tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/QuoteLineItem"
+              $ref: '#/components/schemas/UserProfile'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/QuoteLineItem"
+              $ref: '#/components/schemas/UserProfile'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/QuoteLineItem"
-        required: true
+              $ref: '#/components/schemas/UserProfile'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "201":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/QuoteLineItem"
-          description: ""
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: v1_profile_update_partial_update
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+      security:
+      - tokenAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/v1/quote-line-items/:
+    get:
+      operationId: v1_quote_line_items_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - v1
+      security:
+      - tokenAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedQuoteLineItemList'
+          description: ''
+    post:
+      operationId: v1_quote_line_items_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuoteLineItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuoteLineItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuoteLineItem'
+        required: true
+      security:
+      - tokenAuth: []
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuoteLineItem'
+          description: ''
   /api/v1/quote-line-items/{id}/:
     get:
       operationId: v1_quote_line_items_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this quote line item.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote line item.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/QuoteLineItem"
-          description: ""
+                $ref: '#/components/schemas/QuoteLineItem'
+          description: ''
     put:
       operationId: v1_quote_line_items_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this quote line item.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote line item.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/QuoteLineItem"
+              $ref: '#/components/schemas/QuoteLineItem'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/QuoteLineItem"
+              $ref: '#/components/schemas/QuoteLineItem'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/QuoteLineItem"
+              $ref: '#/components/schemas/QuoteLineItem'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/QuoteLineItem"
-          description: ""
+                $ref: '#/components/schemas/QuoteLineItem'
+          description: ''
     patch:
       operationId: v1_quote_line_items_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this quote line item.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote line item.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedQuoteLineItem"
+              $ref: '#/components/schemas/PatchedQuoteLineItem'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedQuoteLineItem"
+              $ref: '#/components/schemas/PatchedQuoteLineItem'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedQuoteLineItem"
+              $ref: '#/components/schemas/PatchedQuoteLineItem'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/QuoteLineItem"
-          description: ""
+                $ref: '#/components/schemas/QuoteLineItem'
+          description: ''
     delete:
       operationId: v1_quote_line_items_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this quote line item.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote line item.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
   /api/v1/quotes/:
     get:
       operationId: v1_quotes_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Quote"
-          description: ""
+                $ref: '#/components/schemas/PaginatedQuoteList'
+          description: ''
     post:
       operationId: v1_quotes_create
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Quote"
+              $ref: '#/components/schemas/Quote'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Quote"
+              $ref: '#/components/schemas/Quote'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Quote"
+              $ref: '#/components/schemas/Quote'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Quote"
-          description: ""
+                $ref: '#/components/schemas/Quote'
+          description: ''
   /api/v1/quotes/{id}/:
     get:
       operationId: v1_quotes_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this quote.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Quote"
-          description: ""
+                $ref: '#/components/schemas/Quote'
+          description: ''
     put:
       operationId: v1_quotes_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this quote.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Quote"
+              $ref: '#/components/schemas/Quote'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Quote"
+              $ref: '#/components/schemas/Quote'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Quote"
+              $ref: '#/components/schemas/Quote'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Quote"
-          description: ""
+                $ref: '#/components/schemas/Quote'
+          description: ''
     patch:
       operationId: v1_quotes_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this quote.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedQuote"
+              $ref: '#/components/schemas/PatchedQuote'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedQuote"
+              $ref: '#/components/schemas/PatchedQuote'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedQuote"
+              $ref: '#/components/schemas/PatchedQuote'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Quote"
-          description: ""
+                $ref: '#/components/schemas/Quote'
+          description: ''
     delete:
       operationId: v1_quotes_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this quote.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
   /api/v1/quotes/{id}/add_line_item/:
     post:
       operationId: v1_quotes_add_line_item_create
       description: Add a line item to the quote
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this quote.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Quote"
+              $ref: '#/components/schemas/Quote'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Quote"
+              $ref: '#/components/schemas/Quote'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Quote"
+              $ref: '#/components/schemas/Quote'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Quote"
-          description: ""
+                $ref: '#/components/schemas/Quote'
+          description: ''
+  /api/v1/register/:
+    post:
+      operationId: v1_register_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+        required: true
+      security:
+      - tokenAuth: []
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistration'
+          description: ''
   /api/v1/tasks/:
     get:
       operationId: v1_tasks_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Task"
-          description: ""
+                $ref: '#/components/schemas/PaginatedTaskList'
+          description: ''
     post:
       operationId: v1_tasks_create
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: '#/components/schemas/Task'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: '#/components/schemas/Task'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: '#/components/schemas/Task'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
-          description: ""
+                $ref: '#/components/schemas/Task'
+          description: ''
   /api/v1/tasks/{id}/:
     get:
       operationId: v1_tasks_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this task.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this task.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
-          description: ""
+                $ref: '#/components/schemas/Task'
+          description: ''
     put:
       operationId: v1_tasks_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this task.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this task.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: '#/components/schemas/Task'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: '#/components/schemas/Task'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: '#/components/schemas/Task'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
-          description: ""
+                $ref: '#/components/schemas/Task'
+          description: ''
     patch:
       operationId: v1_tasks_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this task.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this task.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedTask"
+              $ref: '#/components/schemas/PatchedTask'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedTask"
+              $ref: '#/components/schemas/PatchedTask'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedTask"
+              $ref: '#/components/schemas/PatchedTask'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
-          description: ""
+                $ref: '#/components/schemas/Task'
+          description: ''
     delete:
       operationId: v1_tasks_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this task.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this task.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
   /api/v1/tasks/{id}/mark_completed/:
     post:
       operationId: v1_tasks_mark_completed_create
       description: Mark a task as completed
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this task.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this task.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: '#/components/schemas/Task'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: '#/components/schemas/Task'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: '#/components/schemas/Task'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
-          description: ""
+                $ref: '#/components/schemas/Task'
+          description: ''
   /api/v1/tasks/overdue/:
     get:
       operationId: v1_tasks_overdue_retrieve
       description: Get overdue tasks
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
-          description: ""
+                $ref: '#/components/schemas/Task'
+          description: ''
   /api/v1/users/:
     get:
       operationId: v1_users_list
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
-          description: ""
+                  $ref: '#/components/schemas/User'
+          description: ''
     post:
       operationId: v1_users_create
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: '#/components/schemas/User'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: '#/components/schemas/User'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: '#/components/schemas/User'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-          description: ""
+                $ref: '#/components/schemas/User'
+          description: ''
   /api/v1/users/{id}/:
     get:
       operationId: v1_users_retrieve
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this user.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-          description: ""
+                $ref: '#/components/schemas/User'
+          description: ''
     put:
       operationId: v1_users_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this user.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: '#/components/schemas/User'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: '#/components/schemas/User'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: '#/components/schemas/User'
         required: true
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-          description: ""
+                $ref: '#/components/schemas/User'
+          description: ''
     patch:
       operationId: v1_users_partial_update
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this user.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
       tags:
-        - v1
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedUser"
+              $ref: '#/components/schemas/PatchedUser'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedUser"
+              $ref: '#/components/schemas/PatchedUser'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedUser"
+              $ref: '#/components/schemas/PatchedUser'
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-          description: ""
+                $ref: '#/components/schemas/User'
+          description: ''
     delete:
       operationId: v1_users_destroy
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this user.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
       tags:
-        - v1
+      - v1
       security:
-        - cookieAuth: []
-        - basicAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
       responses:
-        "204":
+        '204':
           description: No response body
 components:
   schemas:
@@ -1711,9 +1910,9 @@ components:
           format: date-time
           readOnly: true
       required:
-        - created_at
-        - id
-        - name
+      - created_at
+      - id
+      - name
     Contact:
       type: object
       properties:
@@ -1743,12 +1942,12 @@ components:
           format: date-time
           readOnly: true
       required:
-        - account
-        - account_name
-        - created_at
-        - email
-        - id
-        - name
+      - account
+      - account_name
+      - created_at
+      - email
+      - id
+      - name
     InteractionLog:
       type: object
       properties:
@@ -1779,7 +1978,7 @@ components:
           type: string
           readOnly: true
         type:
-          $ref: "#/components/schemas/InteractionLogTypeEnum"
+          $ref: '#/components/schemas/InteractionLogTypeEnum'
         summary:
           type: string
         timestamp:
@@ -1787,21 +1986,21 @@ components:
           format: date-time
           readOnly: true
       required:
-        - contact_name
-        - id
-        - lead_name
-        - opportunity_name
-        - summary
-        - timestamp
-        - type
-        - user
-        - user_name
+      - contact_name
+      - id
+      - lead_name
+      - opportunity_name
+      - summary
+      - timestamp
+      - type
+      - user
+      - user_name
     InteractionLogTypeEnum:
       enum:
-        - call
-        - email
-        - meeting
-        - note
+      - call
+      - email
+      - meeting
+      - note
       type: string
       description: |-
         * `call` - Call
@@ -1831,7 +2030,7 @@ components:
           type: string
           maxLength: 100
         status:
-          $ref: "#/components/schemas/LeadStatusEnum"
+          $ref: '#/components/schemas/LeadStatusEnum'
         assigned_to:
           type: integer
           nullable: true
@@ -1847,19 +2046,19 @@ components:
           format: date-time
           readOnly: true
       required:
-        - assigned_to_name
-        - created_at
-        - email
-        - id
-        - name
-        - updated_at
+      - assigned_to_name
+      - created_at
+      - email
+      - id
+      - name
+      - updated_at
     LeadStatusEnum:
       enum:
-        - new
-        - contacted
-        - qualified
-        - converted
-        - disqualified
+      - new
+      - contacted
+      - qualified
+      - converted
+      - disqualified
       type: string
       description: |-
         * `new` - New
@@ -1892,7 +2091,7 @@ components:
           format: decimal
           pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
         stage:
-          $ref: "#/components/schemas/StageEnum"
+          $ref: '#/components/schemas/StageEnum'
         close_date:
           type: string
           format: date
@@ -1908,14 +2107,221 @@ components:
           format: date-time
           readOnly: true
       required:
-        - account
-        - account_name
-        - amount
-        - contact_name
-        - created_at
-        - id
-        - name
-        - owner_name
+      - account
+      - account_name
+      - amount
+      - contact_name
+      - created_at
+      - id
+      - name
+      - owner_name
+    PaginatedAccountList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+    PaginatedContactList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+    PaginatedInteractionLogList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InteractionLog'
+    PaginatedLeadList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lead'
+    PaginatedOpportunityList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Opportunity'
+    PaginatedProductList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    PaginatedQuoteLineItemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuoteLineItem'
+    PaginatedQuoteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quote'
+    PaginatedTaskList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
     PatchedAccount:
       type: object
       properties:
@@ -2000,7 +2406,7 @@ components:
           type: string
           readOnly: true
         type:
-          $ref: "#/components/schemas/InteractionLogTypeEnum"
+          $ref: '#/components/schemas/InteractionLogTypeEnum'
         summary:
           type: string
         timestamp:
@@ -2030,7 +2436,7 @@ components:
           type: string
           maxLength: 100
         status:
-          $ref: "#/components/schemas/LeadStatusEnum"
+          $ref: '#/components/schemas/LeadStatusEnum'
         assigned_to:
           type: integer
           nullable: true
@@ -2070,7 +2476,7 @@ components:
           format: decimal
           pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
         stage:
-          $ref: "#/components/schemas/StageEnum"
+          $ref: '#/components/schemas/StageEnum'
         close_date:
           type: string
           format: date
@@ -2138,7 +2544,7 @@ components:
         line_items:
           type: array
           items:
-            $ref: "#/components/schemas/QuoteLineItem"
+            $ref: '#/components/schemas/QuoteLineItem'
           readOnly: true
     PatchedQuoteLineItem:
       type: object
@@ -2175,12 +2581,12 @@ components:
           type: string
           maxLength: 255
         type:
-          $ref: "#/components/schemas/TaskTypeEnum"
+          $ref: '#/components/schemas/TaskTypeEnum'
         due_date:
           type: string
           format: date
         status:
-          $ref: "#/components/schemas/TaskStatusEnum"
+          $ref: '#/components/schemas/TaskStatusEnum'
         related_lead:
           type: integer
           nullable: true
@@ -2208,8 +2614,7 @@ components:
           readOnly: true
         username:
           type: string
-          description:
-            Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
@@ -2225,7 +2630,33 @@ components:
           type: string
           maxLength: 150
         role:
-          $ref: "#/components/schemas/RoleEnum"
+          $ref: '#/components/schemas/RoleEnum'
+    PatchedUserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
     Product:
       type: object
       properties:
@@ -2247,9 +2678,9 @@ components:
         is_active:
           type: boolean
       required:
-        - id
-        - name
-        - price
+      - id
+      - name
+      - price
     Quote:
       type: object
       properties:
@@ -2283,16 +2714,16 @@ components:
         line_items:
           type: array
           items:
-            $ref: "#/components/schemas/QuoteLineItem"
+            $ref: '#/components/schemas/QuoteLineItem'
           readOnly: true
       required:
-        - created_at
-        - created_by_name
-        - id
-        - line_items
-        - opportunity
-        - opportunity_name
-        - title
+      - created_at
+      - created_by_name
+      - id
+      - line_items
+      - opportunity
+      - opportunity_name
+      - title
     QuoteLineItem:
       type: object
       properties:
@@ -2319,15 +2750,15 @@ components:
           type: string
           readOnly: true
       required:
-        - id
-        - product_name
-        - quote
-        - total_price
+      - id
+      - product_name
+      - quote
+      - total_price
     RoleEnum:
       enum:
-        - admin
-        - manager
-        - sales_rep
+      - admin
+      - manager
+      - sales_rep
       type: string
       description: |-
         * `admin` - Admin
@@ -2335,11 +2766,11 @@ components:
         * `sales_rep` - Sales Representative
     StageEnum:
       enum:
-        - qualification
-        - proposal
-        - negotiation
-        - won
-        - lost
+      - qualification
+      - proposal
+      - negotiation
+      - won
+      - lost
       type: string
       description: |-
         * `qualification` - Qualification
@@ -2357,12 +2788,12 @@ components:
           type: string
           maxLength: 255
         type:
-          $ref: "#/components/schemas/TaskTypeEnum"
+          $ref: '#/components/schemas/TaskTypeEnum'
         due_date:
           type: string
           format: date
         status:
-          $ref: "#/components/schemas/TaskStatusEnum"
+          $ref: '#/components/schemas/TaskStatusEnum'
         related_lead:
           type: integer
           nullable: true
@@ -2383,19 +2814,19 @@ components:
         notes:
           type: string
       required:
-        - due_date
-        - id
-        - owner
-        - owner_name
-        - related_lead_name
-        - related_opportunity_name
-        - title
-        - type
+      - due_date
+      - id
+      - owner
+      - owner_name
+      - related_lead_name
+      - related_opportunity_name
+      - title
+      - type
     TaskStatusEnum:
       enum:
-        - pending
-        - completed
-        - overdue
+      - pending
+      - completed
+      - overdue
       type: string
       description: |-
         * `pending` - Pending
@@ -2403,16 +2834,48 @@ components:
         * `overdue` - Overdue
     TaskTypeEnum:
       enum:
-        - call
-        - email
-        - meeting
-        - demo
+      - call
+      - email
+      - meeting
+      - demo
       type: string
       description: |-
         * `call` - Call
         * `email` - Email
         * `meeting` - Meeting
         * `demo` - Demo
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
     User:
       type: object
       properties:
@@ -2421,8 +2884,7 @@ components:
           readOnly: true
         username:
           type: string
-          description:
-            Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
@@ -2438,15 +2900,83 @@ components:
           type: string
           maxLength: 150
         role:
-          $ref: "#/components/schemas/RoleEnum"
+          $ref: '#/components/schemas/RoleEnum'
       required:
-        - id
-        - username
+      - id
+      - username
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+      required:
+      - email
+      - id
+      - role
+      - username
+    UserRegistration:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+        confirm_password:
+          type: string
+          writeOnly: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - confirm_password
+      - id
+      - password
   securitySchemes:
-    basicAuth:
+    jwtAuth:
       type: http
-      scheme: basic
-    cookieAuth:
+      scheme: bearer
+      bearerFormat: JWT
+    tokenAuth:
       type: apiKey
-      in: cookie
-      name: sessionid
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
