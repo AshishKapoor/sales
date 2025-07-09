@@ -1,7 +1,7 @@
 [project]
 name = "sales-cookbook"
 version = "0.1.0"
-description = "Sales Cookbook"
+description = "Sales Cookbook is a Django-based sales CRM application designed to streamline sales processes, manage customer relationships, and enhance team collaboration. It provides features like lead management, opportunity tracking, and reporting to help sales teams close deals more effectively."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
