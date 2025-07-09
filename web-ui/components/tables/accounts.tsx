@@ -19,6 +19,12 @@ import {
 } from "@/components/ui/table";
 import { Edit, Loader2, Plus, SearchIcon, Trash2 } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import {
+  ColumnDef,
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import type { Account } from "../../client/gen/sales/account";
@@ -36,6 +42,13 @@ export default function AccountsTable() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  // Table data
+  const queryParams = {
+    page,
+    ordering: "id",
+    ...(debouncedSearch ? { search: debouncedSearch } : {}),
+  };
+  const { data, isLoading, error } = useV1AccountsList(queryParams);
 
   React.useEffect(() => {
     const handler = setTimeout(() => {
@@ -45,12 +58,6 @@ export default function AccountsTable() {
     return () => clearTimeout(handler);
   }, [search]);
 
-  const queryParams = {
-    page,
-    ordering: "id",
-    ...(debouncedSearch ? { search: debouncedSearch } : {}),
-  };
-  const { data, isLoading, error } = useV1AccountsList(queryParams);
   const { trigger: createAccount, isMutating: isCreating } =
     useV1AccountsCreate();
 
@@ -59,12 +66,12 @@ export default function AccountsTable() {
   };
 
   const handleDelete = async (accountToDelete: Account) => {
-    if (!window.confirm(`Delete account '${accountToDelete.name}'?`)) return;
     try {
       await v1AccountsDestroy(accountToDelete.id);
-      toast.success("Account deleted");
+      toast.success("Account deleted successfully");
       refreshAccounts();
-    } catch (e) {
+    } catch (error) {
+      console.error("Failed to delete account:", error);
       toast.error("Failed to delete account");
     }
   };
@@ -103,63 +110,70 @@ export default function AccountsTable() {
     }
   };
 
-  const columns = useMemo(
+  const accounts = data?.results || [];
+  const columns = useMemo<ColumnDef<Account, any>[]>(
     () => [
       {
-        header: "Name",
         accessorKey: "name",
-        cell: (row: any) => row.getValue(),
+        header: "Name",
+        cell: ({ row }) => (
+          <div className="font-medium">{row.getValue("name")}</div>
+        ),
       },
       {
-        header: "Industry",
         accessorKey: "industry",
-        cell: (row: any) => row.getValue() || "-",
+        header: "Industry",
+        cell: ({ row }) => <div>{row.getValue("industry") || "-"}</div>,
       },
       {
-        header: "Size",
         accessorKey: "size",
-        cell: (row: any) => row.getValue() || "-",
+        header: "Size",
+        cell: ({ row }) => <div>{row.getValue("size") || "-"}</div>,
       },
       {
-        header: "Location",
         accessorKey: "location",
-        cell: (row: any) => row.getValue() || "-",
+        header: "Location",
+        cell: ({ row }) => <div>{row.getValue("location") || "-"}</div>,
       },
       {
-        header: "Website",
         accessorKey: "website",
-        cell: (row: any) =>
-          row.getValue() ? (
+        header: "Website",
+        cell: ({ row }) => {
+          const value = row.getValue("website") as string | undefined;
+          return value ? (
             <a
-              href={row.getValue()}
+              href={value}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 underline"
             >
-              {row.getValue()}
+              {value}
             </a>
           ) : (
             "-"
-          ),
+          );
+        },
       },
       {
-        header: "Actions",
         id: "actions",
-        cell: ({ row }: any) => (
-          <div className="flex gap-2">
+        header: "Actions",
+        cell: ({ row }: { row: { original: Account } }) => (
+          <div className="flex items-center gap-2">
             <Button
-              size="icon"
               variant="ghost"
+              size="icon"
               onClick={() => setEditingAccount(row.original)}
+              className="h-8 w-8"
             >
-              <Edit size={16} />
+              <Edit className="h-4 w-4" />
             </Button>
             <Button
-              size="icon"
               variant="ghost"
+              size="icon"
               onClick={() => handleDelete(row.original)}
+              className="h-8 w-8 text-destructive hover:text-destructive"
             >
-              <Trash2 size={16} />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         ),
@@ -168,13 +182,16 @@ export default function AccountsTable() {
     [editingAccount]
   );
 
-  // Table logic (simple, not using react-table for brevity)
-  const accounts = data?.results || [];
+  const table = useReactTable({
+    data: accounts,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <div className="space-y-6">
       {/* Add New Account Form */}
-      <Card className="bg-muted/50">
+      <Card>
         <CardHeader>
           <CardTitle className="text-xl font-bold">+ Add New Account</CardTitle>
         </CardHeader>
@@ -256,97 +273,92 @@ export default function AccountsTable() {
             />
             <SearchIcon className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="overflow-x-auto">
+          <div className="rounded-md border">
             <Table>
               <TableHeader>
-                <TableRow>
-                  {columns.map((col) => (
-                    <TableHead key={col.accessorKey || col.id}>
-                      {col.header}
-                    </TableHead>
-                  ))}
-                </TableRow>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
               </TableHeader>
               <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="text-center">
-                      <Loader2 className="animate-spin mx-auto" />
-                    </TableCell>
-                  </TableRow>
-                ) : accounts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="text-center">
-                      No accounts found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  accounts.map((account: Account) => (
-                    <TableRow key={account.id}>
-                      <TableCell>{account.name}</TableCell>
-                      <TableCell>{account.industry || "-"}</TableCell>
-                      <TableCell>{account.size || "-"}</TableCell>
-                      <TableCell>{account.location || "-"}</TableCell>
-                      <TableCell>
-                        {account.website ? (
-                          <a
-                            href={account.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 underline"
-                          >
-                            {account.website}
-                          </a>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => setEditingAccount(account)}
-                          >
-                            <Edit size={16} />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => handleDelete(account)}
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
-                      </TableCell>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
                     </TableRow>
                   ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="animate-spin mx-auto" />
+                      ) : (
+                        "No accounts found."
+                      )}
+                    </TableCell>
+                  </TableRow>
                 )}
               </TableBody>
             </Table>
           </div>
-          {/* Pagination (simple) */}
-          <div className="flex justify-end mt-4 gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={page === 1}
-              onClick={() => setPage(page - 1)}
-            >
-              Prev
-            </Button>
-            <span className="px-2 text-sm">Page {page}</span>
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={!data?.next}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </Button>
-          </div>
         </CardContent>
       </Card>
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-end mt-4 gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+        >
+          Previous
+        </Button>
+        <span className="text-sm">
+          Page {page}
+          {data?.count && data?.results?.length
+            ? ` of ${Math.ceil(data.count / data.results.length)}`
+            : ""}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() =>
+            setPage((p) =>
+              data?.count &&
+              data?.results?.length &&
+              p < Math.ceil(data.count / data.results.length)
+                ? p + 1
+                : p
+            )
+          }
+          disabled={
+            !data?.count ||
+            !data?.results?.length ||
+            page >= Math.ceil(data.count / data.results.length)
+          }
+        >
+          Next
+        </Button>
+      </div>
 
       {/* Edit Dialog */}
       <Dialog

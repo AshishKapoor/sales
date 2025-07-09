@@ -156,7 +156,7 @@ export default function CustomersTable() {
         ),
       },
     ],
-    []
+    [editingCustomer]
   );
 
   // Table logic (reuse from leads table)
