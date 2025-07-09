@@ -20,7 +20,7 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-    path("api/v1/", include("core.urls"), name="core"),
+    path("api/v1/", include("core.urls")),
     path("api/v1/register/", RegisterUserAPIView.as_view(), name="register"),
     path("api/v1/me/", MeView.as_view(), name="me"),
     path("api/v1/profile/update/", UpdateProfileView.as_view(), name="profile-update"),
