@@ -44,7 +44,7 @@ export default function TasksPage() {
       case "low":
         return "bg-green-100 text-green-800";
       default:
-        return "bg-gray-100 text-foreground";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -57,7 +57,7 @@ export default function TasksPage() {
       case "cancelled":
         return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-foreground";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -68,7 +68,7 @@ export default function TasksPage() {
       case "high":
         return <AlertTriangle className="h-4 w-4 text-orange-500" />;
       default:
-        return <Clock className="h-4 w-4 text-secondary-foreground" />;
+        return <Clock className="h-4 w-4 text-gray-500" />;
     }
   };
 
