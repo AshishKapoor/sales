@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Loader2, Plus, Trash2 } from "lucide-react";
+import { Edit, Loader2, Plus, Search, Trash2 } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { mutate } from "swr";
@@ -381,14 +381,17 @@ export default function CustomersTable() {
         <CardHeader className="flex flex-row items-center justify-between gap-4 pb-2">
           <CardTitle className="flex items-center gap-4">
             All Customers
-            <Input
-              className="w-64"
-              placeholder="Search customers..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              type="search"
-              aria-label="Search customers"
-            />
+            <div className="relative">
+              <Input
+                className="w-64 pl-8"
+                placeholder="Search customers..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                type="search"
+                aria-label="Search customers"
+              />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
