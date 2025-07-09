@@ -7,13 +7,16 @@ import { ArrowLeft, Download, Send } from "lucide-react";
 import Link from "next/link";
 
 interface QuoteDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
-  const quote = mockQuotes.find((q) => q.id === params.id);
+export default async function QuoteDetailPage({
+  params,
+}: QuoteDetailPageProps) {
+  const { id } = await params;
+  const quote = mockQuotes.find((q) => q.id === id);
 
   if (!quote) {
     notFound();
