@@ -9,9 +9,20 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { logout } from "@/lib/auth";
+import { logout, getUser } from "@/lib/auth";
+import { useEffect, useState } from "react";
 
 export function Header() {
+  const [firstName, setFirstName] = useState<string>("");
+
+  useEffect(() => {
+    getUser()
+      .then((user) => {
+        setFirstName(user.first_name || "");
+      })
+      .catch(() => setFirstName(""));
+  }, []);
+
   return (
     <header className="bg-background px-6 py-4 border-sidebar-border shadow-sm">
       <div className="flex items-center justify-between">
@@ -28,13 +39,13 @@ export function Header() {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
+              {firstName && (
+                <span className="hidden cursor-pointer sm:inline text-sm font-medium max-w-[120px] rounded-full bg-gray-200 text-gray-800 px-2 py-1">
+                  {firstName.charAt(0).toUpperCase() + firstName.charAt(1)}
+                </span>
+              )}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {/* <DropdownMenuLabel>Account</DropdownMenuLabel> */}
-              {/* <DropdownMenuSeparator /> */}
               <DropdownMenuItem
                 onClick={async () => {
                   await logout();
