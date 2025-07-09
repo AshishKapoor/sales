@@ -31,7 +31,23 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
+
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': os.getenv("JWT_ACCESS_TOKEN_LIFETIME", "1 hour"),
+#     'REFRESH_TOKEN_LIFETIME': os.getenv("JWT_REFRESH_TOKEN_LIFETIME", "1 day"),
+#     # 'ROTATE_REFRESH_TOKENS': True,
+#     # 'BLACKLIST_AFTER_ROTATION': True,
+#     # 'ALGORITHM': 'HS256',
+#     # 'SIGNING_KEY': os.getenv("JWT_SIGNING_KEY", "your-default-signing-key"),
+# }
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Sales Cookbook API',
