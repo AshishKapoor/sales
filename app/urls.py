@@ -1,11 +1,16 @@
-from django.contrib import admin
-from django.urls import path, include
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from core.views import ChangePasswordView, MeView, RegisterUserAPIView, UpdateProfileView
+from core.views import (
+    ChangePasswordView,
+    MeView,
+    RegisterUserAPIView,
+    UpdateProfileView,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -15,7 +20,7 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-    path("api/v1/", include("core.urls")),
+    path("api/v1/", include("core.urls"), name="core"),
     path("api/v1/register/", RegisterUserAPIView.as_view(), name="register"),
     path("api/v1/me/", MeView.as_view(), name="me"),
     path("api/v1/profile/update/", UpdateProfileView.as_view(), name="profile-update"),

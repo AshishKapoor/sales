@@ -1,8 +1,16 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
 from .models import (
-    Account, Lead, Contact, Opportunity, Task, InteractionLog,
-    Product, Quote, QuoteLineItem
+    Account,
+    Contact,
+    InteractionLog,
+    Lead,
+    Opportunity,
+    Product,
+    Quote,
+    QuoteLineItem,
+    Task,
 )
 
 User = get_user_model()
@@ -134,6 +142,7 @@ class QuoteSerializer(serializers.ModelSerializer):
 # --- Auth/User Registration/Profile Serializers ---
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)

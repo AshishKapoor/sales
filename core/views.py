@@ -5,7 +5,7 @@ from datetime import date
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from rest_framework import generics, permissions, status, viewsets
+from rest_framework import filters, generics, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -103,6 +103,8 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = None  # Disable pagination for user APIs
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['email', 'first_name', 'last_name']
 
     def get_queryset(self):
         # Managers and admins can see all users, sales reps only see themselves
@@ -115,6 +117,8 @@ class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'industry', 'website']
 
     def get_queryset(self):
         return Account.objects.all().order_by('-created_at')
@@ -140,6 +144,8 @@ class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'email', 'phone']
 
     def get_queryset(self):
         queryset = Contact.objects.all().order_by('-created_at')
@@ -156,6 +162,8 @@ class LeadViewSet(viewsets.ModelViewSet):
     queryset = Lead.objects.all()
     serializer_class = LeadSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'email', 'company', 'phone']
 
     def get_queryset(self):
         queryset = Lead.objects.all().order_by('-created_at')
@@ -217,6 +225,8 @@ class OpportunityViewSet(viewsets.ModelViewSet):
     queryset = Opportunity.objects.all()
     serializer_class = OpportunitySerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'account__name', 'contact__name']
 
     def get_queryset(self):
         queryset = Opportunity.objects.all().order_by('-created_at')
@@ -252,6 +262,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', 'description', 'owner__email']
 
     def get_queryset(self):
         queryset = Task.objects.all().order_by('due_date')
@@ -293,6 +305,8 @@ class InteractionLogViewSet(viewsets.ModelViewSet):
     queryset = InteractionLog.objects.all()
     serializer_class = InteractionLogSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['note', 'lead__name', 'contact__name', 'opportunity__name']
 
     def get_queryset(self):
         queryset = InteractionLog.objects.all().order_by('-timestamp')
@@ -324,6 +338,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'sku', 'description']
 
     def get_queryset(self):
         queryset = Product.objects.all()
@@ -340,6 +356,8 @@ class QuoteViewSet(viewsets.ModelViewSet):
     queryset = Quote.objects.all()
     serializer_class = QuoteSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['opportunity__name', 'created_by__email']
 
     def get_queryset(self):
         queryset = Quote.objects.all().order_by('-created_at')
@@ -403,6 +421,8 @@ class QuoteLineItemViewSet(viewsets.ModelViewSet):
     queryset = QuoteLineItem.objects.all()
     serializer_class = QuoteLineItemSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['product__name', 'quote__id']
 
     def get_queryset(self):
         queryset = QuoteLineItem.objects.all()
