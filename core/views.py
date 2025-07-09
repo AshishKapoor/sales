@@ -1,5 +1,3 @@
-
-
 from datetime import date
 
 from django.contrib.auth import get_user_model
@@ -36,6 +34,48 @@ from .serializers import (
     UserRegistrationSerializer,
     UserSerializer,
 )
+from .signals import create_lead_conversion_log, create_task_completion_log
+
+# class DashboardActivityView(APIView):
+#     """Get formatted activity feed for dashboard display."""
+#     permission_classes = [permissions.IsAuthenticated]
+    
+#     def get(self, request):
+#         from .utils import get_dashboard_activity_feed, get_user_activity_summary
+        
+#         # Get query parameters
+#         days = int(request.query_params.get('days', 7))
+#         limit = int(request.query_params.get('limit', 20))
+#         user_filter = request.query_params.get('user')
+        
+#         # Apply user filter
+#         if user_filter == 'me':
+#             user = request.user
+#         elif user_filter and request.user.role in ['admin', 'manager']:
+#             try:
+#                 user = User.objects.get(id=user_filter)
+#             except User.DoesNotExist:
+#                 user = None
+#         else:
+#             user = None
+        
+#         # Get activity feed
+#         activities = get_dashboard_activity_feed(user=user, days=days, limit=limit)
+        
+#         # Get user summary if filtering by specific user
+#         summary = None
+#         if user:
+#             summary = get_user_activity_summary(user, days=days)
+        
+#         return Response({
+#             'activities': activities,
+#             'summary': summary,
+#             'filters': {
+#                 'days': days,
+#                 'limit': limit,
+#                 'user': user.id if user else None
+#             }
+#         })
 
 
 # --- Auth Views ---
@@ -157,6 +197,28 @@ class ContactViewSet(viewsets.ModelViewSet):
             
         return queryset
 
+    @action(detail=True, methods=['post'])
+    def log_interaction(self, request, pk=None):
+        """Log a manual interaction with this contact"""
+        contact = self.get_object()
+        interaction_type = request.data.get('type', 'note')
+        summary = request.data.get('summary', '')
+        
+        if not summary:
+            return Response(
+                {'error': 'Summary is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        InteractionLog.objects.create(
+            user=request.user,
+            contact=contact,
+            type=interaction_type,
+            summary=summary
+        )
+        
+        return Response({'status': 'Interaction logged successfully'})
+
 
 class LeadViewSet(viewsets.ModelViewSet):
     queryset = Lead.objects.all()
@@ -178,6 +240,15 @@ class LeadViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(status=status_filter)
             
         return queryset
+
+    def perform_create(self, serializer):
+        # Set the created_by info for signal handling
+        lead = serializer.save()
+        lead._created_by = self.request.user
+        # If no assigned_to is set, assign to the creator
+        if not lead.assigned_to:
+            lead.assigned_to = self.request.user
+            lead.save()
 
     @action(detail=True, methods=['post'])
     def convert_to_opportunity(self, request, pk=None):
@@ -218,7 +289,32 @@ class LeadViewSet(viewsets.ModelViewSet):
         lead.status = 'converted'
         lead.save()
         
+        # Create interaction log for lead conversion
+        create_lead_conversion_log(lead, opportunity, request.user)
+        
         return Response(OpportunitySerializer(opportunity).data)
+
+    @action(detail=True, methods=['post'])
+    def log_interaction(self, request, pk=None):
+        """Log a manual interaction with this lead"""
+        lead = self.get_object()
+        interaction_type = request.data.get('type', 'note')
+        summary = request.data.get('summary', '')
+        
+        if not summary:
+            return Response(
+                {'error': 'Summary is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        InteractionLog.objects.create(
+            user=request.user,
+            lead=lead,
+            type=interaction_type,
+            summary=summary
+        )
+        
+        return Response({'status': 'Interaction logged successfully'})
 
 
 class OpportunityViewSet(viewsets.ModelViewSet):
@@ -256,6 +352,29 @@ class OpportunityViewSet(viewsets.ModelViewSet):
         quotes = Quote.objects.filter(opportunity=opportunity)
         serializer = QuoteSerializer(quotes, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def log_interaction(self, request, pk=None):
+        """Log a manual interaction with this opportunity"""
+        opportunity = self.get_object()
+        interaction_type = request.data.get('type', 'note')
+        summary = request.data.get('summary', '')
+        
+        if not summary:
+            return Response(
+                {'error': 'Summary is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        InteractionLog.objects.create(
+            user=request.user,
+            opportunity=opportunity,
+            contact=opportunity.contact,
+            type=interaction_type,
+            summary=summary
+        )
+        
+        return Response({'status': 'Interaction logged successfully'})
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -298,6 +417,10 @@ class TaskViewSet(viewsets.ModelViewSet):
         task = self.get_object()
         task.status = 'completed'
         task.save()
+        
+        # Create interaction log for task completion
+        create_task_completion_log(task, request.user)
+        
         return Response({'status': 'Task marked as completed'})
 
 
