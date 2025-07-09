@@ -1,0 +1,2452 @@
+openapi: 3.0.3
+info:
+  title: Sales Cookbook API
+  version: 1.0.0
+  description:
+    Sales Cookbook API Documentation - A comprehensive sales management
+    system
+paths:
+  /api/v1/accounts/:
+    get:
+      operationId: v1_accounts_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Account"
+          description: ""
+    post:
+      operationId: v1_accounts_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Account"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Account"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Account"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+          description: ""
+  /api/v1/accounts/{id}/:
+    get:
+      operationId: v1_accounts_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this account.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+          description: ""
+    put:
+      operationId: v1_accounts_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this account.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Account"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Account"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Account"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+          description: ""
+    patch:
+      operationId: v1_accounts_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this account.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedAccount"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedAccount"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedAccount"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+          description: ""
+    delete:
+      operationId: v1_accounts_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this account.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/accounts/{id}/contacts/:
+    get:
+      operationId: v1_accounts_contacts_retrieve
+      description: Get all contacts associated with this account
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this account.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+          description: ""
+  /api/v1/accounts/{id}/opportunities/:
+    get:
+      operationId: v1_accounts_opportunities_retrieve
+      description: Get all opportunities associated with this account
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this account.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+          description: ""
+  /api/v1/contacts/:
+    get:
+      operationId: v1_contacts_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contact"
+          description: ""
+    post:
+      operationId: v1_contacts_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contact"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Contact"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Contact"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+          description: ""
+  /api/v1/contacts/{id}/:
+    get:
+      operationId: v1_contacts_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this contact.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+          description: ""
+    put:
+      operationId: v1_contacts_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this contact.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contact"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Contact"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Contact"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+          description: ""
+    patch:
+      operationId: v1_contacts_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this contact.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedContact"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedContact"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedContact"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+          description: ""
+    delete:
+      operationId: v1_contacts_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this contact.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/interactions/:
+    get:
+      operationId: v1_interactions_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InteractionLog"
+          description: ""
+    post:
+      operationId: v1_interactions_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InteractionLog"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/InteractionLog"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/InteractionLog"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionLog"
+          description: ""
+  /api/v1/interactions/{id}/:
+    get:
+      operationId: v1_interactions_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this interaction log.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionLog"
+          description: ""
+    put:
+      operationId: v1_interactions_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this interaction log.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InteractionLog"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/InteractionLog"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/InteractionLog"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionLog"
+          description: ""
+    patch:
+      operationId: v1_interactions_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this interaction log.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedInteractionLog"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedInteractionLog"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedInteractionLog"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionLog"
+          description: ""
+    delete:
+      operationId: v1_interactions_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this interaction log.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/leads/:
+    get:
+      operationId: v1_leads_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lead"
+          description: ""
+    post:
+      operationId: v1_leads_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lead"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Lead"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Lead"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+          description: ""
+  /api/v1/leads/{id}/:
+    get:
+      operationId: v1_leads_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this lead.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+          description: ""
+    put:
+      operationId: v1_leads_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this lead.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lead"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Lead"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Lead"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+          description: ""
+    patch:
+      operationId: v1_leads_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this lead.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedLead"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedLead"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedLead"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+          description: ""
+    delete:
+      operationId: v1_leads_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this lead.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/leads/{id}/convert_to_opportunity/:
+    post:
+      operationId: v1_leads_convert_to_opportunity_create
+      description: Convert a lead to an opportunity
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this lead.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lead"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Lead"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Lead"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+          description: ""
+  /api/v1/opportunities/:
+    get:
+      operationId: v1_opportunities_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Opportunity"
+          description: ""
+    post:
+      operationId: v1_opportunities_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Opportunity"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Opportunity"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Opportunity"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Opportunity"
+          description: ""
+  /api/v1/opportunities/{id}/:
+    get:
+      operationId: v1_opportunities_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this opportunity.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Opportunity"
+          description: ""
+    put:
+      operationId: v1_opportunities_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this opportunity.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Opportunity"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Opportunity"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Opportunity"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Opportunity"
+          description: ""
+    patch:
+      operationId: v1_opportunities_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this opportunity.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedOpportunity"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedOpportunity"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedOpportunity"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Opportunity"
+          description: ""
+    delete:
+      operationId: v1_opportunities_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this opportunity.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/opportunities/{id}/quotes/:
+    get:
+      operationId: v1_opportunities_quotes_retrieve
+      description: Get all quotes for this opportunity
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this opportunity.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Opportunity"
+          description: ""
+  /api/v1/opportunities/pipeline_value/:
+    get:
+      operationId: v1_opportunities_pipeline_value_retrieve
+      description: Get total pipeline value
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Opportunity"
+          description: ""
+  /api/v1/products/:
+    get:
+      operationId: v1_products_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+          description: ""
+    post:
+      operationId: v1_products_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Product"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+          description: ""
+  /api/v1/products/{id}/:
+    get:
+      operationId: v1_products_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this product.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+          description: ""
+    put:
+      operationId: v1_products_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this product.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Product"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+          description: ""
+    patch:
+      operationId: v1_products_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this product.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedProduct"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedProduct"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedProduct"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+          description: ""
+    delete:
+      operationId: v1_products_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this product.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/quote-line-items/:
+    get:
+      operationId: v1_quote_line_items_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QuoteLineItem"
+          description: ""
+    post:
+      operationId: v1_quote_line_items_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteLineItem"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/QuoteLineItem"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/QuoteLineItem"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteLineItem"
+          description: ""
+  /api/v1/quote-line-items/{id}/:
+    get:
+      operationId: v1_quote_line_items_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this quote line item.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteLineItem"
+          description: ""
+    put:
+      operationId: v1_quote_line_items_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this quote line item.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteLineItem"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/QuoteLineItem"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/QuoteLineItem"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteLineItem"
+          description: ""
+    patch:
+      operationId: v1_quote_line_items_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this quote line item.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedQuoteLineItem"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedQuoteLineItem"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedQuoteLineItem"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteLineItem"
+          description: ""
+    delete:
+      operationId: v1_quote_line_items_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this quote line item.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/quotes/:
+    get:
+      operationId: v1_quotes_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Quote"
+          description: ""
+    post:
+      operationId: v1_quotes_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Quote"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Quote"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Quote"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quote"
+          description: ""
+  /api/v1/quotes/{id}/:
+    get:
+      operationId: v1_quotes_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this quote.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quote"
+          description: ""
+    put:
+      operationId: v1_quotes_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this quote.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Quote"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Quote"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Quote"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quote"
+          description: ""
+    patch:
+      operationId: v1_quotes_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this quote.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedQuote"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedQuote"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedQuote"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quote"
+          description: ""
+    delete:
+      operationId: v1_quotes_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this quote.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/quotes/{id}/add_line_item/:
+    post:
+      operationId: v1_quotes_add_line_item_create
+      description: Add a line item to the quote
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this quote.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Quote"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Quote"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Quote"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quote"
+          description: ""
+  /api/v1/tasks/:
+    get:
+      operationId: v1_tasks_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+          description: ""
+    post:
+      operationId: v1_tasks_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Task"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Task"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          description: ""
+  /api/v1/tasks/{id}/:
+    get:
+      operationId: v1_tasks_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this task.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          description: ""
+    put:
+      operationId: v1_tasks_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this task.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Task"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Task"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          description: ""
+    patch:
+      operationId: v1_tasks_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this task.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedTask"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedTask"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedTask"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          description: ""
+    delete:
+      operationId: v1_tasks_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this task.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/tasks/{id}/mark_completed/:
+    post:
+      operationId: v1_tasks_mark_completed_create
+      description: Mark a task as completed
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this task.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Task"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Task"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          description: ""
+  /api/v1/tasks/overdue/:
+    get:
+      operationId: v1_tasks_overdue_retrieve
+      description: Get overdue tasks
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          description: ""
+  /api/v1/users/:
+    get:
+      operationId: v1_users_list
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+          description: ""
+    post:
+      operationId: v1_users_create
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/User"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: ""
+  /api/v1/users/{id}/:
+    get:
+      operationId: v1_users_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this user.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: ""
+    put:
+      operationId: v1_users_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this user.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/User"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: ""
+    patch:
+      operationId: v1_users_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this user.
+          required: true
+      tags:
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedUser"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedUser"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedUser"
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: ""
+    delete:
+      operationId: v1_users_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this user.
+          required: true
+      tags:
+        - v1
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        industry:
+          type: string
+          maxLength: 255
+        size:
+          type: string
+          maxLength: 100
+        location:
+          type: string
+          maxLength: 255
+        website:
+          type: string
+          format: uri
+          maxLength: 200
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - created_at
+        - id
+        - name
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+        account:
+          type: integer
+        account_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - account
+        - account_name
+        - created_at
+        - email
+        - id
+        - name
+    InteractionLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+        user_name:
+          type: string
+          readOnly: true
+        lead:
+          type: integer
+          nullable: true
+        lead_name:
+          type: string
+          readOnly: true
+        contact:
+          type: integer
+          nullable: true
+        contact_name:
+          type: string
+          readOnly: true
+        opportunity:
+          type: integer
+          nullable: true
+        opportunity_name:
+          type: string
+          readOnly: true
+        type:
+          $ref: "#/components/schemas/InteractionLogTypeEnum"
+        summary:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - contact_name
+        - id
+        - lead_name
+        - opportunity_name
+        - summary
+        - timestamp
+        - type
+        - user
+        - user_name
+    InteractionLogTypeEnum:
+      enum:
+        - call
+        - email
+        - meeting
+        - note
+      type: string
+      description: |-
+        * `call` - Call
+        * `email` - Email
+        * `meeting` - Meeting
+        * `note` - Note
+    Lead:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+        company:
+          type: string
+          maxLength: 255
+        source:
+          type: string
+          maxLength: 100
+        status:
+          $ref: "#/components/schemas/LeadStatusEnum"
+        assigned_to:
+          type: integer
+          nullable: true
+        assigned_to_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - assigned_to_name
+        - created_at
+        - email
+        - id
+        - name
+        - updated_at
+    LeadStatusEnum:
+      enum:
+        - new
+        - contacted
+        - qualified
+        - converted
+        - disqualified
+      type: string
+      description: |-
+        * `new` - New
+        * `contacted` - Contacted
+        * `qualified` - Qualified
+        * `converted` - Converted
+        * `disqualified` - Disqualified
+    Opportunity:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        account:
+          type: integer
+        account_name:
+          type: string
+          readOnly: true
+        contact:
+          type: integer
+          nullable: true
+        contact_name:
+          type: string
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        stage:
+          $ref: "#/components/schemas/StageEnum"
+        close_date:
+          type: string
+          format: date
+          nullable: true
+        owner:
+          type: integer
+          nullable: true
+        owner_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - account
+        - account_name
+        - amount
+        - contact_name
+        - created_at
+        - id
+        - name
+        - owner_name
+    PatchedAccount:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        industry:
+          type: string
+          maxLength: 255
+        size:
+          type: string
+          maxLength: 100
+        location:
+          type: string
+          maxLength: 255
+        website:
+          type: string
+          format: uri
+          maxLength: 200
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedContact:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+        account:
+          type: integer
+        account_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedInteractionLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+        user_name:
+          type: string
+          readOnly: true
+        lead:
+          type: integer
+          nullable: true
+        lead_name:
+          type: string
+          readOnly: true
+        contact:
+          type: integer
+          nullable: true
+        contact_name:
+          type: string
+          readOnly: true
+        opportunity:
+          type: integer
+          nullable: true
+        opportunity_name:
+          type: string
+          readOnly: true
+        type:
+          $ref: "#/components/schemas/InteractionLogTypeEnum"
+        summary:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedLead:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+        company:
+          type: string
+          maxLength: 255
+        source:
+          type: string
+          maxLength: 100
+        status:
+          $ref: "#/components/schemas/LeadStatusEnum"
+        assigned_to:
+          type: integer
+          nullable: true
+        assigned_to_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedOpportunity:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        account:
+          type: integer
+        account_name:
+          type: string
+          readOnly: true
+        contact:
+          type: integer
+          nullable: true
+        contact_name:
+          type: string
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        stage:
+          $ref: "#/components/schemas/StageEnum"
+        close_date:
+          type: string
+          format: date
+          nullable: true
+        owner:
+          type: integer
+          nullable: true
+        owner_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          maxLength: 10
+        is_active:
+          type: boolean
+    PatchedQuote:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        opportunity:
+          type: integer
+        opportunity_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        created_by:
+          type: integer
+          nullable: true
+        created_by_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        notes:
+          type: string
+        line_items:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuoteLineItem"
+          readOnly: true
+    PatchedQuoteLineItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        quote:
+          type: integer
+        product:
+          type: integer
+          nullable: true
+        product_name:
+          type: string
+          readOnly: true
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_price:
+          type: string
+          readOnly: true
+    PatchedTask:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        type:
+          $ref: "#/components/schemas/TaskTypeEnum"
+        due_date:
+          type: string
+          format: date
+        status:
+          $ref: "#/components/schemas/TaskStatusEnum"
+        related_lead:
+          type: integer
+          nullable: true
+        related_lead_name:
+          type: string
+          readOnly: true
+        related_opportunity:
+          type: integer
+          nullable: true
+        related_opportunity_name:
+          type: string
+          readOnly: true
+        owner:
+          type: integer
+        owner_name:
+          type: string
+          readOnly: true
+        notes:
+          type: string
+    PatchedUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description:
+            Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          $ref: "#/components/schemas/RoleEnum"
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          maxLength: 10
+        is_active:
+          type: boolean
+      required:
+        - id
+        - name
+        - price
+    Quote:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        opportunity:
+          type: integer
+        opportunity_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        created_by:
+          type: integer
+          nullable: true
+        created_by_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        notes:
+          type: string
+        line_items:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuoteLineItem"
+          readOnly: true
+      required:
+        - created_at
+        - created_by_name
+        - id
+        - line_items
+        - opportunity
+        - opportunity_name
+        - title
+    QuoteLineItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        quote:
+          type: integer
+        product:
+          type: integer
+          nullable: true
+        product_name:
+          type: string
+          readOnly: true
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_price:
+          type: string
+          readOnly: true
+      required:
+        - id
+        - product_name
+        - quote
+        - total_price
+    RoleEnum:
+      enum:
+        - admin
+        - manager
+        - sales_rep
+      type: string
+      description: |-
+        * `admin` - Admin
+        * `manager` - Manager
+        * `sales_rep` - Sales Representative
+    StageEnum:
+      enum:
+        - qualification
+        - proposal
+        - negotiation
+        - won
+        - lost
+      type: string
+      description: |-
+        * `qualification` - Qualification
+        * `proposal` - Proposal
+        * `negotiation` - Negotiation
+        * `won` - Closed Won
+        * `lost` - Closed Lost
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        type:
+          $ref: "#/components/schemas/TaskTypeEnum"
+        due_date:
+          type: string
+          format: date
+        status:
+          $ref: "#/components/schemas/TaskStatusEnum"
+        related_lead:
+          type: integer
+          nullable: true
+        related_lead_name:
+          type: string
+          readOnly: true
+        related_opportunity:
+          type: integer
+          nullable: true
+        related_opportunity_name:
+          type: string
+          readOnly: true
+        owner:
+          type: integer
+        owner_name:
+          type: string
+          readOnly: true
+        notes:
+          type: string
+      required:
+        - due_date
+        - id
+        - owner
+        - owner_name
+        - related_lead_name
+        - related_opportunity_name
+        - title
+        - type
+    TaskStatusEnum:
+      enum:
+        - pending
+        - completed
+        - overdue
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `completed` - Completed
+        * `overdue` - Overdue
+    TaskTypeEnum:
+      enum:
+        - call
+        - email
+        - meeting
+        - demo
+      type: string
+      description: |-
+        * `call` - Call
+        * `email` - Email
+        * `meeting` - Meeting
+        * `demo` - Demo
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description:
+            Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          $ref: "#/components/schemas/RoleEnum"
+      required:
+        - id
+        - username
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
