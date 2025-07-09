@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ["yourdomain.com", "api.yourdomain.com"]
+ALLOWED_HOSTS = ["yourdomain.com", "api.yourdomain.com", "sales.sannty.in", "*.sannty.in"]
 
 DATABASES = {
     "default": {
@@ -19,3 +19,34 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+# CORS settings for production
+CORS_ALLOWED_ORIGINS = [
+    "https://sales.sannty.in",
+    "https://www.sales.sannty.in",
+]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+CORS_ALLOWED_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://sales.sannty.in",
+    "https://www.sales.sannty.in",
+]
