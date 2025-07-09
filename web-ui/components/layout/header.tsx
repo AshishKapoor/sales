@@ -1,10 +1,10 @@
-import { Bell, Search, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Bell, Search, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function Header() {
   return (
-    <header className="border-b bg-white px-6 py-4">
+    <header className="bg-background px-6 py-4 border-sidebar-border shadow-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="relative">
@@ -22,5 +22,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

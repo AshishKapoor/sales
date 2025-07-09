@@ -1,27 +1,28 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { Sidebar } from "@/components/layout/sidebar"
-import { Header } from "@/components/layout/header"
+import type React from "react";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Sidebar } from "@/components/layout/sidebar";
+import { Header } from "@/components/layout/header";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CRM Pro - Salesforce-like CRM",
-  description: "A comprehensive CRM application for managing products, quotes, and opportunities",
-    generator: 'v0.dev'
-}
+  title: "Sales CRM",
+  description:
+    "A comprehensive CRM application for managing products, quotes, and opportunities",
+  generator: "v0.dev",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-muted shadow-lg">
           <Sidebar />
           <div className="flex flex-1 flex-col overflow-hidden">
             <Header />
@@ -30,5 +31,5 @@ export default function RootLayout({
         </div>
       </body>
     </html>
-  )
+  );
 }

@@ -110,6 +110,20 @@
       "python": "${workspaceFolder}/venv/bin/python",
       "console": "integratedTerminal",
       "justMyCode": false
+    },
+    {
+      "name": "Next.js: Debug Web UI",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/web-ui",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "console": "integratedTerminal",
+      "autoAttachChildProcesses": true,
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "NODE_OPTIONS": "--inspect"
+      }
     }
   ],
   "inputs": [
