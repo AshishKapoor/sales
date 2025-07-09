@@ -1,3 +1,6 @@
+"use client";
+
+import { useV1UsersList } from "@/client/gen/sales/v1/v1";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   mockProducts,
@@ -16,6 +19,9 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
+  const { data: users } = useV1UsersList();
+  console.log(users);
+
   const totalRevenue = mockQuotes.reduce(
     (sum, quote) => sum + quote.totalPrice,
     0

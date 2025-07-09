@@ -128,7 +128,9 @@ export async function refreshAccessToken() {
 export async function logout() {
   removeTokens();
   authToken = null;
-  window.location.href = "/login";
+  if (typeof window !== "undefined") {
+    window.location.href = "/login";
+  }
 }
 
 export function isLoggedIn(): boolean {
