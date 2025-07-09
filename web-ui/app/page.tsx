@@ -1,12 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { mockProducts, mockQuotes, mockOpportunities } from "@/lib/mock-data"
-import { DollarSign, Package, FileText, Target, TrendingUp } from "lucide-react"
+import { mockProducts, mockQuotes, mockOpportunities, mockLeads, mockTasks, mockInteractions } from "@/lib/mock-data"
+import { DollarSign, Target, TrendingUp, Users, CheckSquare } from "lucide-react"
 
 export default function Dashboard() {
   const totalRevenue = mockQuotes.reduce((sum, quote) => sum + quote.totalPrice, 0)
   const activeProducts = mockProducts.filter((p) => p.isActive).length
   const totalQuotes = mockQuotes.length
   const totalOpportunities = mockOpportunities.length
+  const totalLeads = mockLeads.length
+  const pendingTasks = mockTasks.filter((t) => t.status !== "completed").length
+  const recentInteractions = mockInteractions.length
 
   const stats = [
     {
@@ -16,16 +19,16 @@ export default function Dashboard() {
       change: "+12.5%",
     },
     {
-      title: "Active Products",
-      value: activeProducts.toString(),
-      icon: Package,
-      change: "+2",
+      title: "Active Leads",
+      value: totalLeads.toString(),
+      icon: Users,
+      change: "+3",
     },
     {
-      title: "Total Quotes",
-      value: totalQuotes.toString(),
-      icon: FileText,
-      change: "+5",
+      title: "Pending Tasks",
+      value: pendingTasks.toString(),
+      icon: CheckSquare,
+      change: "-2",
     },
     {
       title: "Opportunities",
@@ -120,6 +123,30 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Activities</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {mockInteractions.slice(0, 3).map((interaction) => (
+              <div key={interaction.id} className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">{interaction.subject}</p>
+                  <p className="text-sm text-gray-600">
+                    {interaction.type} with {interaction.relatedTo.name}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">{interaction.createdAt.toLocaleDateString()}</p>
+                  <p className="text-xs text-gray-500">{interaction.createdBy}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import type { Product, Quote, Opportunity } from "@/types"
+import type { Product, Quote, Opportunity, Lead, Task, Interaction } from "@/types"
 
 export const mockProducts: Product[] = [
   {
@@ -114,5 +114,156 @@ export const mockQuotes: Quote[] = [
         totalPrice: 2500,
       },
     ],
+  },
+]
+
+export const mockLeads: Lead[] = [
+  {
+    id: "1",
+    firstName: "Michael",
+    lastName: "Chen",
+    email: "michael.chen@innovate.com",
+    phone: "+1 (555) 234-5678",
+    company: "Innovate Solutions",
+    title: "CTO",
+    source: "website",
+    status: "qualified",
+    rating: "hot",
+    assignedTo: "John Doe",
+    createdAt: new Date("2024-01-10"),
+    notes: "Interested in enterprise package, budget approved",
+  },
+  {
+    id: "2",
+    firstName: "Sarah",
+    lastName: "Williams",
+    email: "sarah.w@globaltech.com",
+    phone: "+1 (555) 345-6789",
+    company: "Global Tech Corp",
+    title: "VP of Operations",
+    source: "referral",
+    status: "contacted",
+    rating: "warm",
+    assignedTo: "Jane Smith",
+    createdAt: new Date("2024-01-15"),
+    notes: "Referred by existing customer, needs demo",
+  },
+  {
+    id: "3",
+    firstName: "David",
+    lastName: "Rodriguez",
+    email: "d.rodriguez@startup.io",
+    company: "StartupXYZ",
+    title: "Founder",
+    source: "social_media",
+    status: "new",
+    rating: "cold",
+    assignedTo: "John Doe",
+    createdAt: new Date("2024-02-01"),
+    notes: "LinkedIn connection, early stage startup",
+  },
+]
+
+export const mockTasks: Task[] = [
+  {
+    id: "1",
+    title: "Follow up with Innovate Solutions",
+    description: "Send pricing proposal and schedule demo",
+    type: "follow_up",
+    priority: "high",
+    status: "pending",
+    assignedTo: "John Doe",
+    relatedTo: {
+      type: "lead",
+      id: "1",
+      name: "Michael Chen - Innovate Solutions",
+    },
+    dueDate: new Date("2024-02-15"),
+    createdAt: new Date("2024-02-10"),
+  },
+  {
+    id: "2",
+    title: "Demo call with Global Tech",
+    description: "Product demonstration focusing on enterprise features",
+    type: "demo",
+    priority: "medium",
+    status: "in_progress",
+    assignedTo: "Jane Smith",
+    relatedTo: {
+      type: "lead",
+      id: "2",
+      name: "Sarah Williams - Global Tech Corp",
+    },
+    dueDate: new Date("2024-02-12"),
+    createdAt: new Date("2024-02-08"),
+  },
+  {
+    id: "3",
+    title: "Send contract to Acme Corp",
+    description: "Final contract review and signature",
+    type: "email",
+    priority: "urgent",
+    status: "completed",
+    assignedTo: "John Doe",
+    relatedTo: {
+      type: "opportunity",
+      id: "1",
+      name: "Acme Corp Implementation",
+    },
+    dueDate: new Date("2024-02-05"),
+    createdAt: new Date("2024-02-01"),
+    completedAt: new Date("2024-02-05"),
+  },
+]
+
+export const mockInteractions: Interaction[] = [
+  {
+    id: "1",
+    type: "call",
+    subject: "Initial discovery call",
+    description: "Discussed current challenges and potential solutions. Very interested in our enterprise package.",
+    direction: "outbound",
+    duration: 45,
+    outcome: "Positive - requested proposal",
+    relatedTo: {
+      type: "lead",
+      id: "1",
+      name: "Michael Chen - Innovate Solutions",
+    },
+    createdBy: "John Doe",
+    createdAt: new Date("2024-01-12"),
+    completedAt: new Date("2024-01-12"),
+  },
+  {
+    id: "2",
+    type: "email",
+    subject: "Product information request",
+    description: "Sent detailed product brochure and pricing information",
+    direction: "outbound",
+    relatedTo: {
+      type: "lead",
+      id: "2",
+      name: "Sarah Williams - Global Tech Corp",
+    },
+    createdBy: "Jane Smith",
+    createdAt: new Date("2024-01-16"),
+  },
+  {
+    id: "3",
+    type: "meeting",
+    subject: "Contract negotiation",
+    description: "Final contract terms discussion and agreement on pricing",
+    direction: "inbound",
+    duration: 90,
+    outcome: "Contract agreed, moving to signature",
+    relatedTo: {
+      type: "opportunity",
+      id: "1",
+      name: "Acme Corp Implementation",
+    },
+    createdBy: "John Doe",
+    createdAt: new Date("2024-02-03"),
+    scheduledAt: new Date("2024-02-03"),
+    completedAt: new Date("2024-02-03"),
   },
 ]

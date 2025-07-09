@@ -3,14 +3,27 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Package, FileText, Users, Target, Settings } from "lucide-react"
+import {
+  LayoutDashboard,
+  Package,
+  FileText,
+  Users,
+  Target,
+  Settings,
+  CheckSquare,
+  MessageSquare,
+  Building,
+} from "lucide-react"
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Leads", href: "/leads", icon: Users },
+  { name: "Opportunities", href: "/opportunities", icon: Target },
   { name: "Products", href: "/products", icon: Package },
   { name: "Quotes", href: "/quotes", icon: FileText },
-  { name: "Opportunities", href: "/opportunities", icon: Target },
-  { name: "Customers", href: "/customers", icon: Users },
+  { name: "Tasks", href: "/tasks", icon: CheckSquare },
+  { name: "Interactions", href: "/interactions", icon: MessageSquare },
+  { name: "Customers", href: "/customers", icon: Building },
   { name: "Settings", href: "/settings", icon: Settings },
 ]
 
