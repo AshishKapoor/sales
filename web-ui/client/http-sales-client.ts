@@ -143,8 +143,6 @@ export const httpSalesClient = async <T>(
   config: AxiosRequestConfig
 ): Promise<T> => {
   const { data } = await AXIOS_INSTANCE(config);
-  console.log(data);
-
   return data;
 };
 

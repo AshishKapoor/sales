@@ -1,6 +1,7 @@
 
 
 from datetime import date
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -9,15 +10,33 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from .models import (
-    Account, Contact, Lead, Opportunity, Task, InteractionLog,
-    Product, Quote, QuoteLineItem
+    Account,
+    Contact,
+    InteractionLog,
+    Lead,
+    Opportunity,
+    Product,
+    Quote,
+    QuoteLineItem,
+    Task,
 )
 from .serializers import (
-    UserRegistrationSerializer, UserProfileSerializer,
-    UserSerializer, AccountSerializer, ContactSerializer, LeadSerializer, OpportunitySerializer,
-    TaskSerializer, InteractionLogSerializer, ProductSerializer, QuoteSerializer, QuoteLineItemSerializer
+    AccountSerializer,
+    ContactSerializer,
+    InteractionLogSerializer,
+    LeadSerializer,
+    OpportunitySerializer,
+    ProductSerializer,
+    QuoteLineItemSerializer,
+    QuoteSerializer,
+    TaskSerializer,
+    UserProfileSerializer,
+    UserRegistrationSerializer,
+    UserSerializer,
 )
+
 
 # --- Auth Views ---
 class RegisterUserAPIView(generics.CreateAPIView):

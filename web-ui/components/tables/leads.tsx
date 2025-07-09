@@ -49,14 +49,15 @@ export default function LeadsTable() {
   const [page, setPage] = useState(1);
 
   // Fetch leads using SWR
-  const { data, isLoading, error } = useV1LeadsList({ page });
+  const queryParams = { page };
+  const { data, isLoading, error } = useV1LeadsList(queryParams);
 
   // SWR Mutations
   const { trigger: createLead, isMutating: isCreating } = useV1LeadsCreate();
 
   // Helper function to refresh leads data
   const refreshLeads = () => {
-    mutate(getV1LeadsListKey());
+    mutate(getV1LeadsListKey(queryParams));
   };
 
   // Handlers for CRUD operations
