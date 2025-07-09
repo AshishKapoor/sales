@@ -4,14 +4,14 @@ import { cn } from "@/lib/utils";
 import {
   Building,
   CheckSquare,
+  Contact,
   FileText,
   LayoutDashboard,
-  MessageSquare,
   Package,
   Settings,
   Target,
   UserCog,
-  Users,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -24,7 +24,7 @@ const navigation = [
   { name: "Products", href: "/products", icon: Package },
   { name: "Quotes", href: "/quotes", icon: FileText },
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
-  { name: "Interactions", href: "/interactions", icon: MessageSquare },
+  { name: "Contacts", href: "/contacts", icon: Contact },
   { name: "Customers", href: "/customers", icon: Building },
   { name: "Settings", href: "/settings", icon: Settings },
 ];

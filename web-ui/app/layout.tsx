@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import type { Metadata } from "next";
+// import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { LoginScreen } from "@/components/login-screen";
 import { isLoggedIn } from "@/lib/auth";
 import { useEffect, useState } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,6 +43,7 @@ export default function RootLayout({
               <div className="flex flex-1 flex-col overflow-hidden">
                 <Header />
                 <main className="flex-1 overflow-auto p-6">{children}</main>
+                <Toaster />
               </div>
             </div>
           ) : (

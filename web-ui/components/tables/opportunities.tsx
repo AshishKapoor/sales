@@ -10,6 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -29,6 +36,8 @@ import {
   useV1OpportunitiesList,
   v1OpportunitiesDestroy,
   v1OpportunitiesPartialUpdate,
+  useV1AccountsList,
+  useV1ContactsList,
 } from "../../client/gen/sales/v1/v1";
 
 export default function OpportunitiesTable() {
@@ -57,6 +66,10 @@ export default function OpportunitiesTable() {
   const { data, isLoading, error } = useV1OpportunitiesList(queryParams);
   const { trigger: createOpportunity, isMutating: isCreating } =
     useV1OpportunitiesCreate();
+
+  // Fetch accounts and contacts for dropdowns
+  const { data: accountsData } = useV1AccountsList({});
+  const { data: contactsData } = useV1ContactsList({});
 
   const refreshOpportunities = () => {
     mutate(getV1OpportunitiesListKey(queryParams));
@@ -115,25 +128,42 @@ export default function OpportunitiesTable() {
       {
         accessorKey: "stage",
         header: "Stage",
-        cell: ({ row }: any) => (
-          <div className="text-muted-foreground">{row.getValue("stage")}</div>
-        ),
+        cell: ({ row }: any) => {
+          const stage = row.getValue("stage") as string;
+          return (
+            <div className="text-muted-foreground capitalize">
+              {stage?.replace("_", " ")}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "amount",
         header: "Amount",
-        cell: ({ row }: any) => (
-          <div className="text-muted-foreground">{row.getValue("amount")}</div>
-        ),
+        cell: ({ row }: any) => {
+          const amount = parseFloat(row.getValue("amount"));
+          return (
+            <div className="text-muted-foreground">
+              $
+              {amount.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "close_date",
         header: "Close Date",
-        cell: ({ row }: any) => (
-          <div className="text-muted-foreground">
-            {row.getValue("close_date")}
-          </div>
-        ),
+        cell: ({ row }: any) => {
+          const closeDate = row.getValue("close_date");
+          return (
+            <div className="text-muted-foreground">
+              {closeDate ? new Date(closeDate).toLocaleDateString() : "—"}
+            </div>
+          );
+        },
       },
       {
         id: "actions",
@@ -179,7 +209,7 @@ export default function OpportunitiesTable() {
     e.preventDefault();
     try {
       await createOpportunity(newOpportunity as Opportunity);
-      setNewOpportunity({});
+      setNewOpportunity({}); // Clear the form
       toast.success("Opportunity created successfully");
       refreshOpportunities();
     } catch (error) {
@@ -229,7 +259,7 @@ export default function OpportunitiesTable() {
           <form onSubmit={handleCreate} className="flex flex-wrap gap-4">
             <div className="flex-1 min-w-[200px]">
               <Input
-                placeholder="Name"
+                placeholder="Opportunity Name"
                 value={newOpportunity.name || ""}
                 onChange={(e) =>
                   setNewOpportunity({ ...newOpportunity, name: e.target.value })
@@ -238,45 +268,62 @@ export default function OpportunitiesTable() {
               />
             </div>
             <div className="flex-1 min-w-[200px]">
-              <Input
-                placeholder="Account Name"
-                value={newOpportunity.account_name || ""}
-                onChange={(e) =>
+              <Select
+                value={newOpportunity.account?.toString() || ""}
+                onValueChange={(value) =>
                   setNewOpportunity({
                     ...newOpportunity,
-                    account_name: e.target.value,
+                    account: parseInt(value),
                   })
                 }
-              />
-            </div>
-            <div className="min-w-[200px]">
-              <label className="text-sm font-medium">Stage</label>
-              <select
-                className="w-full border rounded px-2 py-2 text-sm"
-                value={newOpportunity.stage || ""}
-                onChange={(e) =>
-                  setNewOpportunity({
-                    ...newOpportunity,
-                    stage: e.target
-                      .value as (typeof StageEnum)[keyof typeof StageEnum],
-                  })
-                }
-                required
               >
-                <option value="" disabled>
-                  Select stage
-                </option>
-                {Object.values(StageEnum).map((stage) => (
-                  <option key={stage} value={stage} className="capitalize">
-                    {stage}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accountsData?.results?.map((account) => (
+                    <SelectItem key={account.id} value={account.id.toString()}>
+                      {account.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <Select
+                value={newOpportunity.contact?.toString() || ""}
+                onValueChange={(value) =>
+                  setNewOpportunity({
+                    ...newOpportunity,
+                    contact: value ? parseInt(value) : null,
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Contact (Optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No contact selected</SelectItem>
+                  {contactsData?.results
+                    ?.filter(
+                      (contact) => contact.account === newOpportunity.account
+                    )
+                    ?.map((contact) => (
+                      <SelectItem
+                        key={contact.id}
+                        value={contact.id.toString()}
+                      >
+                        {contact.name} ({contact.title || "No title"})
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex-1 min-w-[200px]">
               <Input
-                placeholder="Amount"
+                placeholder="Amount (e.g., 10000.00)"
                 type="number"
+                step="0.01"
                 value={newOpportunity.amount || ""}
                 onChange={(e) =>
                   setNewOpportunity({
@@ -284,7 +331,32 @@ export default function OpportunitiesTable() {
                     amount: e.target.value,
                   })
                 }
+                required
               />
+            </div>
+            <div className="min-w-[150px]">
+              <Select
+                value={newOpportunity.stage || ""}
+                onValueChange={(value) =>
+                  setNewOpportunity({
+                    ...newOpportunity,
+                    stage: value as (typeof StageEnum)[keyof typeof StageEnum],
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(StageEnum).map(([key, value]) => (
+                    <SelectItem key={key} value={value}>
+                      <span className="capitalize">
+                        {value.replace("_", " ")}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex-1 min-w-[200px]">
               <Input
@@ -341,50 +413,103 @@ export default function OpportunitiesTable() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Account Name</label>
-              <Input
-                value={editingOpportunity?.account_name || ""}
-                onChange={(e) =>
-                  setEditingOpportunity(
-                    editingOpportunity
-                      ? { ...editingOpportunity, account_name: e.target.value }
-                      : null
-                  )
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Stage</label>
-              <select
-                className="w-full border rounded px-2 py-2 text-sm"
-                value={editingOpportunity?.stage || ""}
-                onChange={(e) =>
+              <label className="text-sm font-medium">Account</label>
+              <Select
+                value={editingOpportunity?.account?.toString() || ""}
+                onValueChange={(value) =>
                   setEditingOpportunity(
                     editingOpportunity
                       ? {
                           ...editingOpportunity,
-                          stage: e.target
-                            .value as (typeof StageEnum)[keyof typeof StageEnum],
+                          account: parseInt(value),
                         }
                       : null
                   )
                 }
-                required
               >
-                <option value="" disabled>
-                  Select stage
-                </option>
-                {Object.values(StageEnum).map((stage) => (
-                  <option key={stage} value={stage} className="capitalize">
-                    {stage}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accountsData?.results?.map((account) => (
+                    <SelectItem key={account.id} value={account.id.toString()}>
+                      {account.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Contact (Optional)</label>
+              <Select
+                value={editingOpportunity?.contact?.toString() || ""}
+                onValueChange={(value) =>
+                  setEditingOpportunity(
+                    editingOpportunity
+                      ? {
+                          ...editingOpportunity,
+                          contact: value ? parseInt(value) : null,
+                        }
+                      : null
+                  )
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select contact" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">No contact selected</SelectItem>
+                  {contactsData?.results
+                    ?.filter(
+                      (contact) =>
+                        contact.account === editingOpportunity?.account
+                    )
+                    ?.map((contact) => (
+                      <SelectItem
+                        key={contact.id}
+                        value={contact.id.toString()}
+                      >
+                        {contact.name} ({contact.title || "No title"})
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Stage</label>
+              <Select
+                value={editingOpportunity?.stage || ""}
+                onValueChange={(value) =>
+                  setEditingOpportunity(
+                    editingOpportunity
+                      ? {
+                          ...editingOpportunity,
+                          stage:
+                            value as (typeof StageEnum)[keyof typeof StageEnum],
+                        }
+                      : null
+                  )
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(StageEnum).map(([key, value]) => (
+                    <SelectItem key={key} value={value}>
+                      <span className="capitalize">
+                        {value.replace("_", " ")}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Amount</label>
               <Input
                 type="number"
+                step="0.01"
                 value={editingOpportunity?.amount || ""}
                 onChange={(e) =>
                   setEditingOpportunity(
@@ -393,6 +518,7 @@ export default function OpportunitiesTable() {
                       : null
                   )
                 }
+                required
               />
             </div>
             <div className="space-y-2">
