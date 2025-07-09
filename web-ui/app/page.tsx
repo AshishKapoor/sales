@@ -1,18 +1,20 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  mockInteractions,
+  mockLeads,
+  mockOpportunities,
   mockProducts,
   mockQuotes,
-  mockOpportunities,
-  mockLeads,
   mockTasks,
-  mockInteractions,
 } from "@/lib/mock-data";
 import {
+  CheckSquare,
   DollarSign,
   Target,
   TrendingUp,
   Users,
-  CheckSquare,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -20,12 +22,9 @@ export default function Dashboard() {
     (sum, quote) => sum + quote.totalPrice,
     0
   );
-  const activeProducts = mockProducts.filter((p) => p.isActive).length;
-  const totalQuotes = mockQuotes.length;
   const totalOpportunities = mockOpportunities.length;
   const totalLeads = mockLeads.length;
   const pendingTasks = mockTasks.filter((t) => t.status !== "completed").length;
-  const recentInteractions = mockInteractions.length;
 
   const stats = [
     {

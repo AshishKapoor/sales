@@ -6,8 +6,7 @@ import Axios, {
 } from "axios";
 import { toast } from "sonner";
 
-export const SALES_BASE_URL =
-  process.env.SALES_BASE_URL || window.location.origin;
+export const SALES_BASE_URL = "http://127.0.0.1:8000";
 
 // Add retry property to AxiosRequestConfig
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
@@ -89,7 +88,9 @@ AXIOS_INSTANCE.interceptors.response.use(
           request.reject(refreshError);
         });
         failedQueue = [];
-        toast.error("Session expired. Please login again.");
+        if (typeof window !== "undefined") {
+          toast.error("Session expired. Please login again.");
+        }
         throw new Error("Authentication failed"); // More specific error
       } finally {
         isRefreshing = false;
@@ -102,25 +103,35 @@ AXIOS_INSTANCE.interceptors.response.use(
       const firstKey = Object.keys(data)[0];
       if (firstKey) {
         const message = data[firstKey][0];
-        toast.error(message);
+        if (typeof window !== "undefined") {
+          toast.error(message);
+        }
       } else {
-        toast.error("Bad Request");
+        if (typeof window !== "undefined") {
+          toast.error("Bad Request");
+        }
       }
       throw { errorMessage: "Bad Request" };
     }
 
     if (error.response?.status === 404 || error.response?.status === 405) {
-      toast.error("Not Found");
+      if (typeof window !== "undefined") {
+        toast.error("Not Found");
+      }
       throw { errorMessage: "Not Found" };
     }
 
     if (error.response?.status === 403) {
-      toast.error("Access forbidden");
+      if (typeof window !== "undefined") {
+        toast.error("Access forbidden");
+      }
       throw { errorMessage: "Access forbidden" };
     }
 
     if (error.message === "Network Error") {
-      toast.error("Network Error");
+      if (typeof window !== "undefined") {
+        toast.error("Network Error");
+      }
       throw { errorMessage: "Network Error" };
     }
 
@@ -132,6 +143,8 @@ export const httpSalesClient = async <T>(
   config: AxiosRequestConfig
 ): Promise<T> => {
   const { data } = await AXIOS_INSTANCE(config);
+  console.log(data);
+
   return data;
 };
 

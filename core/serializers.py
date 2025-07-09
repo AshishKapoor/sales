@@ -130,3 +130,61 @@ class QuoteSerializer(serializers.ModelSerializer):
             'created_at', 'notes', 'line_items'
         ]
         read_only_fields = ['id', 'created_at']
+
+# --- Auth/User Registration/Profile Serializers ---
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True)
+    confirm_password = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username', 'password', 'confirm_password', 'first_name', 'last_name', 'role')
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'confirm_password': {'write_only': True},
+            'username': {'required': False},
+        }
+
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
+        try:
+            validate_password(data['password'])
+        except ValidationError as e:
+            raise serializers.ValidationError({"password": list(e)})
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop('confirm_password')
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            username=validated_data.get('username', validated_data['email']),
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            role=validated_data.get('role', 'sales_rep')
+        )
+        return user
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'role')
+        read_only_fields = ('id', 'email', 'username', 'role')
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({"confirm_password": "New passwords do not match."})
+        try:
+            validate_password(data['new_password'], self.context['request'].user)
+        except ValidationError as e:
+            raise serializers.ValidationError({"new_password": list(e)})
+        return data

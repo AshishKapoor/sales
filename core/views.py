@@ -1,3 +1,67 @@
+from rest_framework import generics, permissions
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from .serializers import UserRegistrationSerializer, UserProfileSerializer, ChangePasswordSerializer
+
+# --- Auth Views ---
+class RegisterUserAPIView(generics.CreateAPIView):
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        email = request.data.get("email")
+        if not email:
+            return Response({"email": ["Email is required."]}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            validate_email(email)
+        except ValidationError:
+            return Response({"email": ["Enter a valid email address."]}, status=status.HTTP_400_BAD_REQUEST)
+        if get_user_model().objects.filter(email=email).exists():
+            return Response({"email": ["Something went wrong. Please contact support or try again."]}, status=status.HTTP_400_BAD_REQUEST)
+        mutable_data = request.data.copy()
+        mutable_data['username'] = email
+        request._full_data = mutable_data
+        return super().create(request, *args, **kwargs)
+
+class MeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data)
+
+class UpdateProfileView(generics.UpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        current_password = request.data.get("current_password")
+        new_password = request.data.get("new_password")
+        confirm_password = request.data.get("confirm_password")
+
+        if not current_password or not new_password or not confirm_password:
+            return Response({"error": "All password fields are required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not user.check_password(current_password):
+            return Response({"error": "Current password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+        if new_password != confirm_password:
+            return Response({"error": "New passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            from django.contrib.auth.password_validation import validate_password
+            validate_password(new_password, user)
+        except ValidationError as e:
+            return Response({"error": list(e)}, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(new_password)
+        user.save()
+        return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -20,7 +84,7 @@ User = get_user_model()
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         # Managers and admins can see all users, sales reps only see themselves
@@ -32,7 +96,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Account.objects.all().order_by('-created_at')
@@ -57,7 +121,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Contact.objects.all().order_by('-created_at')
@@ -73,7 +137,7 @@ class ContactViewSet(viewsets.ModelViewSet):
 class LeadViewSet(viewsets.ModelViewSet):
     queryset = Lead.objects.all()
     serializer_class = LeadSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Lead.objects.all().order_by('-created_at')
@@ -134,7 +198,7 @@ class LeadViewSet(viewsets.ModelViewSet):
 class OpportunityViewSet(viewsets.ModelViewSet):
     queryset = Opportunity.objects.all()
     serializer_class = OpportunitySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Opportunity.objects.all().order_by('-created_at')
@@ -169,7 +233,7 @@ class OpportunityViewSet(viewsets.ModelViewSet):
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Task.objects.all().order_by('due_date')
@@ -210,7 +274,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 class InteractionLogViewSet(viewsets.ModelViewSet):
     queryset = InteractionLog.objects.all()
     serializer_class = InteractionLogSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = InteractionLog.objects.all().order_by('-timestamp')
@@ -241,7 +305,7 @@ class InteractionLogViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Product.objects.all()
@@ -257,7 +321,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 class QuoteViewSet(viewsets.ModelViewSet):
     queryset = Quote.objects.all()
     serializer_class = QuoteSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Quote.objects.all().order_by('-created_at')
@@ -320,7 +384,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
 class QuoteLineItemViewSet(viewsets.ModelViewSet):
     queryset = QuoteLineItem.objects.all()
     serializer_class = QuoteLineItemSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = QuoteLineItem.objects.all()

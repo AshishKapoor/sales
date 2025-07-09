@@ -66,8 +66,9 @@ export async function login(email: string, password: string) {
   const response = await fetch(`${SALES_BASE_URL}/api/token/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ username: email, email, password }),
   });
+
   if (!response.ok) {
     throw new Error("Invalid credentials");
   }
@@ -128,7 +129,9 @@ export async function refreshAccessToken() {
 export async function logout() {
   removeTokens();
   authToken = null;
-  window.location.href = "/login";
+  if (typeof window !== "undefined") {
+    window.location.href = "/login";
+  }
 }
 
 export function isLoggedIn(): boolean {
