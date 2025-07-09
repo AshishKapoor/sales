@@ -5,7 +5,6 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
-  orderColumns,
 } from "@tanstack/react-table";
 import {
   useV1LeadsList,
@@ -41,16 +40,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Edit, Trash2, Loader2 } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export default function LeadsTable() {
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [newLead, setNewLead] = useState<Partial<Lead>>({});
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search input
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1); // Reset to first page on new search
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [search]);
 
   // Fetch leads using SWR
-  const queryParams = { page, ordering: "id" };
+  const queryParams = {
+    page,
+    ordering: "id",
+    ...(debouncedSearch ? { search: debouncedSearch } : {}),
+  };
   const { data, isLoading, error } = useV1LeadsList(queryParams);
 
   // SWR Mutations
@@ -437,8 +451,22 @@ export default function LeadsTable() {
 
       {/* Leads Table */}
       <Card>
-        <CardHeader>
-          <CardTitle>All Leads</CardTitle>
+        {/* Leads Table Header with Search */}
+        <CardHeader className="flex flex-row items-center justify-between gap-4 pb-2">
+          <CardTitle className="flex items-center gap-4">
+            All Leads
+            <div className="relative">
+              <Input
+                className="w-64 pl-8"
+                placeholder="Search leads..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                type="search"
+                aria-label="Search leads"
+              />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
