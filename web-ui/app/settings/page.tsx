@@ -1,15 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600">Manage your CRM preferences and configuration</p>
+        <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+        <p className="text-secondary-foreground">
+          Manage your CRM preferences and configuration
+        </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -47,7 +49,9 @@ export default function SettingsPage() {
               <Switch id="quote-alerts" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="opportunity-reminders">Opportunity Reminders</Label>
+              <Label htmlFor="opportunity-reminders">
+                Opportunity Reminders
+              </Label>
               <Switch id="opportunity-reminders" />
             </div>
           </CardContent>
@@ -58,5 +62,5 @@ export default function SettingsPage() {
         <Button>Save Settings</Button>
       </div>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Plus, Mail, Phone, MapPin } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus, Mail, Phone, MapPin } from "lucide-react";
 
 const mockCustomers = [
   {
@@ -21,15 +21,17 @@ const mockCustomers = [
     address: "456 Innovation Ave, San Francisco, CA 94105",
     status: "Active",
   },
-]
+];
 
 export default function CustomersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
-          <p className="text-gray-600">Manage your customer relationships</p>
+          <h1 className="text-3xl font-bold text-foreground">Customers</h1>
+          <p className="text-secondary-foreground">
+            Manage your customer relationships
+          </p>
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
@@ -46,7 +48,9 @@ export default function CustomersPage() {
             <CardContent>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Primary Contact</p>
+                  <p className="text-sm font-medium text-secondary-foreground">
+                    Primary Contact
+                  </p>
                   <p>{customer.contact}</p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -67,5 +71,5 @@ export default function CustomersPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }

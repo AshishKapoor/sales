@@ -1,63 +1,71 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { mockProducts } from "@/lib/mock-data"
-import type { Product } from "@/types"
-import { Plus, Search, Edit, Trash2 } from "lucide-react"
-import { ProductForm } from "@/components/forms/product-form"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { mockProducts } from "@/lib/mock-data";
+import type { Product } from "@/types";
+import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { ProductForm } from "@/components/forms/product-form";
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>(mockProducts)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showForm, setShowForm] = useState(false)
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   const filteredProducts = products.filter(
     (product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const handleSaveProduct = (productData: Omit<Product, "id" | "createdAt">) => {
+  const handleSaveProduct = (
+    productData: Omit<Product, "id" | "createdAt">
+  ) => {
     if (editingProduct) {
       setProducts(
         products.map((p) =>
           p.id === editingProduct.id
-            ? { ...productData, id: editingProduct.id, createdAt: editingProduct.createdAt }
-            : p,
-        ),
-      )
+            ? {
+                ...productData,
+                id: editingProduct.id,
+                createdAt: editingProduct.createdAt,
+              }
+            : p
+        )
+      );
     } else {
       const newProduct: Product = {
         ...productData,
         id: Date.now().toString(),
         createdAt: new Date(),
-      }
-      setProducts([...products, newProduct])
+      };
+      setProducts([...products, newProduct]);
     }
-    setShowForm(false)
-    setEditingProduct(null)
-  }
+    setShowForm(false);
+    setEditingProduct(null);
+  };
 
   const handleDeleteProduct = (id: string) => {
-    setProducts(products.filter((p) => p.id !== id))
-  }
+    setProducts(products.filter((p) => p.id !== id));
+  };
 
   const handleEditProduct = (product: Product) => {
-    setEditingProduct(product)
-    setShowForm(true)
-  }
+    setEditingProduct(product);
+    setShowForm(true);
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-600">Manage your product catalog</p>
+          <h1 className="text-3xl font-bold text-foreground">Products</h1>
+          <p className="text-secondary-foreground">
+            Manage your product catalog
+          </p>
         </div>
         <Button onClick={() => setShowForm(true)}>
           <Plus className="mr-2 h-4 w-4" />
@@ -67,7 +75,7 @@ export default function ProductsPage() {
 
       <div className="flex items-center space-x-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary-foreground" />
           <Input
             placeholder="Search products..."
             value={searchTerm}
@@ -89,19 +97,31 @@ export default function ProductsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-4">{product.description}</p>
+              <p className="text-secondary-foreground mb-4">
+                {product.description}
+              </p>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-2xl font-bold">
                     {product.currency} ${product.price.toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-500">Created {product.createdAt.toLocaleDateString()}</p>
+                  <p className="text-sm text-secondary-foreground">
+                    Created {product.createdAt.toLocaleDateString()}
+                  </p>
                 </div>
                 <div className="flex space-x-2">
-                  <Button variant="outline" size="icon" onClick={() => handleEditProduct(product)}>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleEditProduct(product)}
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" onClick={() => handleDeleteProduct(product.id)}>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleDeleteProduct(product.id)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -116,11 +136,11 @@ export default function ProductsPage() {
           product={editingProduct}
           onSave={handleSaveProduct}
           onCancel={() => {
-            setShowForm(false)
-            setEditingProduct(null)
+            setShowForm(false);
+            setEditingProduct(null);
           }}
         />
       )}
     </div>
-  )
+  );
 }

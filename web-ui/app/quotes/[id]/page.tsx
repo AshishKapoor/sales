@@ -1,36 +1,36 @@
-import { notFound } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { mockQuotes } from "@/lib/mock-data"
-import { ArrowLeft, Download, Send } from "lucide-react"
-import Link from "next/link"
+import { notFound } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { mockQuotes } from "@/lib/mock-data";
+import { ArrowLeft, Download, Send } from "lucide-react";
+import Link from "next/link";
 
 interface QuoteDetailPageProps {
   params: {
-    id: string
-  }
+    id: string;
+  };
 }
 
 export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
-  const quote = mockQuotes.find((q) => q.id === params.id)
+  const quote = mockQuotes.find((q) => q.id === params.id);
 
   if (!quote) {
-    notFound()
+    notFound();
   }
 
   const getStatusColor = (status: typeof quote.status) => {
     switch (status) {
       case "sent":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "accepted":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "rejected":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -42,8 +42,10 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{quote.title}</h1>
-            <p className="text-gray-600">Quote #{quote.id}</p>
+            <h1 className="text-3xl font-bold text-foreground">
+              {quote.title}
+            </h1>
+            <p className="text-secondary-foreground">Quote #{quote.id}</p>
           </div>
         </div>
         <div className="flex space-x-2">
@@ -67,25 +69,39 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Status</p>
-                  <Badge className={getStatusColor(quote.status)}>{quote.status}</Badge>
+                  <p className="text-sm font-medium text-secondary-foreground">
+                    Status
+                  </p>
+                  <Badge className={getStatusColor(quote.status)}>
+                    {quote.status}
+                  </Badge>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Created By</p>
+                  <p className="text-sm font-medium text-secondary-foreground">
+                    Created By
+                  </p>
                   <p>{quote.createdBy}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Created Date</p>
+                  <p className="text-sm font-medium text-secondary-foreground">
+                    Created Date
+                  </p>
                   <p>{quote.createdAt.toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Amount</p>
-                  <p className="text-lg font-semibold">${quote.totalPrice.toLocaleString()}</p>
+                  <p className="text-sm font-medium text-secondary-foreground">
+                    Total Amount
+                  </p>
+                  <p className="text-lg font-semibold">
+                    ${quote.totalPrice.toLocaleString()}
+                  </p>
                 </div>
               </div>
               {quote.notes && (
                 <div className="mt-4">
-                  <p className="text-sm font-medium text-gray-600">Notes</p>
+                  <p className="text-sm font-medium text-secondary-foreground">
+                    Notes
+                  </p>
                   <p className="mt-1">{quote.notes}</p>
                 </div>
               )}
@@ -113,12 +129,18 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
                         <td className="py-3">
                           <div>
                             <p className="font-medium">{item.product.name}</p>
-                            <p className="text-sm text-gray-600">{item.product.description}</p>
+                            <p className="text-sm text-secondary-foreground">
+                              {item.product.description}
+                            </p>
                           </div>
                         </td>
                         <td className="text-right py-3">{item.quantity}</td>
-                        <td className="text-right py-3">${item.unitPrice.toLocaleString()}</td>
-                        <td className="text-right py-3 font-medium">${item.totalPrice.toLocaleString()}</td>
+                        <td className="text-right py-3">
+                          ${item.unitPrice.toLocaleString()}
+                        </td>
+                        <td className="text-right py-3 font-medium">
+                          ${item.totalPrice.toLocaleString()}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -127,7 +149,9 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
                       <td colSpan={3} className="text-right py-3 font-medium">
                         Total:
                       </td>
-                      <td className="text-right py-3 text-lg font-bold">${quote.totalPrice.toLocaleString()}</td>
+                      <td className="text-right py-3 text-lg font-bold">
+                        ${quote.totalPrice.toLocaleString()}
+                      </td>
                     </tr>
                   </tfoot>
                 </table>
@@ -161,15 +185,15 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal:</span>
+                  <span className="text-secondary-foreground">Subtotal:</span>
                   <span>${quote.totalPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Tax (0%):</span>
+                  <span className="text-secondary-foreground">Tax (0%):</span>
                   <span>$0.00</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Discount:</span>
+                  <span className="text-secondary-foreground">Discount:</span>
                   <span>$0.00</span>
                 </div>
                 <hr />
@@ -183,5 +207,5 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
