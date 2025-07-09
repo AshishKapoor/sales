@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 from .models import (
@@ -137,11 +139,6 @@ class QuoteSerializer(serializers.ModelSerializer):
             'total_price', 'created_by', 'created_by_name', 
             'created_at', 'notes', 'line_items'
         ]
-        read_only_fields = ['id', 'created_at']
-
-# --- Auth/User Registration/Profile Serializers ---
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

@@ -55,3 +55,4 @@ export * from './v1ProductsListParams';
 export * from './v1QuoteLineItemsListParams';
 export * from './v1QuotesListParams';
 export * from './v1TasksListParams';
+export * from './v1UsersListParams';

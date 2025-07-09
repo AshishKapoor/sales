@@ -5,6 +5,7 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  orderColumns,
 } from "@tanstack/react-table";
 import {
   useV1LeadsList,
@@ -49,7 +50,7 @@ export default function LeadsTable() {
   const [page, setPage] = useState(1);
 
   // Fetch leads using SWR
-  const queryParams = { page };
+  const queryParams = { page, ordering: "id" };
   const { data, isLoading, error } = useV1LeadsList(queryParams);
 
   // SWR Mutations

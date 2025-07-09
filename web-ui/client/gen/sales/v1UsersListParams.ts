@@ -6,15 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type V1ContactsListParams = {
+export type V1UsersListParams = {
 /**
  * Which field to use when ordering the results.
  */
 ordering?: string;
-/**
- * A page number within the paginated result set.
- */
-page?: number;
 /**
  * A search term.
  */

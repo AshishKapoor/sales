@@ -58,7 +58,8 @@ import type {
   V1ProductsListParams,
   V1QuoteLineItemsListParams,
   V1QuotesListParams,
-  V1TasksListParams
+  V1TasksListParams,
+  V1UsersListParams
 } from '.././';
 
 import { httpSalesClient } from '../../../http-sales-client';
@@ -2574,29 +2575,30 @@ export const useV1TasksOverdueRetrieve = <TError = unknown>(
   }
 }
 export const v1UsersList = (
-    
+    params?: V1UsersListParams,
  ) => {
     return httpSalesClient<User[]>(
-    {url: `/api/v1/users/`, method: 'GET'
+    {url: `/api/v1/users/`, method: 'GET',
+        params
     },
     );
   }
 
 
 
-export const getV1UsersListKey = () => [`/api/v1/users/`] as const;
+export const getV1UsersListKey = (params?: V1UsersListParams,) => [`/api/v1/users/`, ...(params ? [params]: [])] as const;
 
 export type V1UsersListQueryResult = NonNullable<Awaited<ReturnType<typeof v1UsersList>>>
 export type V1UsersListQueryError = unknown
 
 export const useV1UsersList = <TError = unknown>(
-   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof v1UsersList>>, TError> & { swrKey?: Key, enabled?: boolean },  }
+  params?: V1UsersListParams, options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof v1UsersList>>, TError> & { swrKey?: Key, enabled?: boolean },  }
 ) => {
   const {swr: swrOptions} = options ?? {}
 
   const isEnabled = swrOptions?.enabled !== false
-  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getV1UsersListKey() : null);
-  const swrFn = () => v1UsersList()
+  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getV1UsersListKey(params) : null);
+  const swrFn = () => v1UsersList(params)
 
   const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
 
