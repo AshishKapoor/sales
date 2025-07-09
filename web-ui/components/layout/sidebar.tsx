@@ -1,23 +1,25 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
-  Package,
-  FileText,
-  Users,
-  Target,
-  Settings,
-  CheckSquare,
-  MessageSquare,
   Building,
+  CheckSquare,
+  FileText,
+  LayoutDashboard,
+  MessageSquare,
+  Package,
+  Settings,
+  Target,
+  UserCog,
+  Users,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Leads", href: "/leads", icon: Users },
+  { name: "Accounts", href: "/accounts", icon: UserCog },
   { name: "Opportunities", href: "/opportunities", icon: Target },
   { name: "Products", href: "/products", icon: Package },
   { name: "Quotes", href: "/quotes", icon: FileText },
