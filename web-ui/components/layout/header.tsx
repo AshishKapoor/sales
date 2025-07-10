@@ -42,9 +42,13 @@ export function Header() {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              {firstName && (
+              {firstName ? (
                 <span className="cursor-pointer sm:inline text-sm font-medium max-w-[120px] rounded-full bg-gray-200 text-gray-800 px-2 py-1">
                   {firstName.charAt(0).toUpperCase() + firstName.charAt(1)}
+                </span>
+              ) : (
+                <span className="cursor-pointer sm:inline text-sm font-medium max-w-[120px] rounded-full bg-gray-200 text-gray-800 px-2 py-1">
+                  <User className="h-5 w-5 text-gray-500 cursor-pointer" />
                 </span>
               )}
             </DropdownMenuTrigger>
