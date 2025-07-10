@@ -566,31 +566,31 @@ class ProductViewSet(viewsets.ModelViewSet):
         """
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             # Only admins and managers can modify products
-            if self.request.user.role not in ['admin', 'manager']:
+            if self.request.user.role not in ['admin', 'manager', 'sales_rep']:
                 self.permission_classes = [permissions.IsAuthenticated]
                 return [permission() for permission in self.permission_classes]
         return super().get_permissions()
     
     def create(self, request, *args, **kwargs):
-        if request.user.role not in ['admin', 'manager']:
+        if request.user.role not in ['admin', 'manager', 'sales_rep']:
             return Response(
-                {'error': 'Only admins and managers can create products'},
+                {'error': 'Only admins, managers, and sales reps can create products'},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().create(request, *args, **kwargs)
     
     def update(self, request, *args, **kwargs):
-        if request.user.role not in ['admin', 'manager']:
+        if request.user.role not in ['admin', 'manager', 'sales_rep']:
             return Response(
-                {'error': 'Only admins and managers can update products'},
+                {'error': 'Only admins, managers, and sales reps can update products'},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
-        if request.user.role not in ['admin', 'manager']:
+        if request.user.role not in ['admin', 'manager', 'sales_rep']:
             return Response(
-                {'error': 'Only admins and managers can delete products'},
+                {'error': 'Only admins, managers, and sales reps can delete products'},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().destroy(request, *args, **kwargs)
