@@ -9,4 +9,5 @@ export default {
     config.plugins.push(new MiniCssExtractPlugin());
     return config;
   },
+  devIndicators: false,
 };
