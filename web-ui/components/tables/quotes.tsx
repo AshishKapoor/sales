@@ -24,9 +24,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Loader2, Plus, SearchIcon, Trash2 } from "lucide-react";
+import { Edit, Loader2, Plus, SearchIcon, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { mutate } from "swr";
+import { useRouter } from "next/navigation";
 import type { Quote } from "../../client/gen/sales/quote";
 import {
   useV1QuotesList,
@@ -46,6 +47,7 @@ import {
 } from "@/components/ui/select";
 
 export default function QuotesTable() {
+  const router = useRouter();
   const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
   const [newQuote, setNewQuote] = useState<Partial<Quote>>({});
   const [page, setPage] = useState(1);
@@ -141,7 +143,9 @@ export default function QuotesTable() {
         accessorKey: "title",
         header: "Title",
         cell: ({ row }) => (
-          <div className="font-medium">{row.getValue("title")}</div>
+          <div className="font-medium text-blue-600">
+            {row.getValue("title")}
+          </div>
         ),
       },
       {
@@ -180,8 +184,18 @@ export default function QuotesTable() {
             <Button
               variant="ghost"
               size="icon"
+              onClick={() => router.push(`/quotes/${row.original.id}`)}
+              className="h-8 w-8"
+              title="View Quote"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setEditingQuote(row.original)}
               className="h-8 w-8"
+              title="Edit Quote"
             >
               <Edit className="h-4 w-4" />
             </Button>
@@ -190,6 +204,7 @@ export default function QuotesTable() {
               size="icon"
               onClick={() => handleDelete(row.original)}
               className="h-8 w-8 text-destructive hover:text-destructive"
+              title="Delete Quote"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -312,7 +327,17 @@ export default function QuotesTable() {
               <TableBody>
                 {table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
+                    <TableRow
+                      key={row.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={(e) => {
+                        // Don't navigate if clicking on action buttons
+                        if ((e.target as HTMLElement).closest("button")) {
+                          return;
+                        }
+                        router.push(`/quotes/${row.original.id}`);
+                      }}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
                           {flexRender(

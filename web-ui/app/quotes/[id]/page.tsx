@@ -1,38 +1,39 @@
-import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+"use client";
+
+import { useV1QuotesRetrieve } from "@/client/gen/sales/v1/v1";
 import { Button } from "@/components/ui/button";
-import { mockQuotes } from "@/lib/mock-data";
-import { ArrowLeft, Download, Send } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, Download, Loader2, Send } from "lucide-react";
 import Link from "next/link";
+import { notFound, useParams } from "next/navigation";
 
-interface QuoteDetailPageProps {
-  params: Promise<{
-    id: string;
-  }>;
-}
+export default function QuoteDetailPage() {
+  const params = useParams();
+  const id = typeof params.id === "string" ? parseInt(params.id) : 0;
 
-export default async function QuoteDetailPage({
-  params,
-}: QuoteDetailPageProps) {
-  const { id } = await params;
-  const quote = mockQuotes.find((q) => q.id === id);
+  const {
+    data: quote,
+    error,
+    isLoading,
+  } = useV1QuotesRetrieve(id, {
+    swr: { enabled: !!id && id > 0 },
+  });
 
-  if (!quote) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !quote) {
     notFound();
   }
 
-  const getStatusColor = (status: typeof quote.status) => {
-    switch (status) {
-      case "sent":
-        return "bg-blue-100 text-blue-800";
-      case "accepted":
-        return "bg-green-100 text-green-800";
-      case "rejected":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
+  // Convert API price strings to numbers for display
+  const formatPrice = (price: string | undefined) => {
+    return price ? parseFloat(price) : 0;
   };
 
   return (
@@ -73,30 +74,28 @@ export default async function QuoteDetailPage({
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <p className="text-sm font-medium text-secondary-foreground">
-                    Status
+                    Opportunity
                   </p>
-                  <Badge className={getStatusColor(quote.status)}>
-                    {quote.status}
-                  </Badge>
+                  <p>{quote.opportunity_name}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-secondary-foreground">
                     Created By
                   </p>
-                  <p>{quote.createdBy}</p>
+                  <p>{quote.created_by_name}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-secondary-foreground">
                     Created Date
                   </p>
-                  <p>{quote.createdAt.toLocaleDateString()}</p>
+                  <p>{new Date(quote.created_at).toLocaleDateString()}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-secondary-foreground">
                     Total Amount
                   </p>
                   <p className="text-lg font-semibold">
-                    ${quote.totalPrice.toLocaleString()}
+                    ${formatPrice(quote.total_price).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -127,22 +126,21 @@ export default async function QuoteDetailPage({
                     </tr>
                   </thead>
                   <tbody>
-                    {quote.lineItems.map((item) => (
+                    {quote.line_items.map((item) => (
                       <tr key={item.id} className="border-b">
                         <td className="py-3">
                           <div>
-                            <p className="font-medium">{item.product.name}</p>
-                            <p className="text-sm text-secondary-foreground">
-                              {item.product.description}
-                            </p>
+                            <p className="font-medium">{item.product_name}</p>
                           </div>
                         </td>
-                        <td className="text-right py-3">{item.quantity}</td>
                         <td className="text-right py-3">
-                          ${item.unitPrice.toLocaleString()}
+                          {item.quantity || 0}
+                        </td>
+                        <td className="text-right py-3">
+                          ${formatPrice(item.unit_price).toLocaleString()}
                         </td>
                         <td className="text-right py-3 font-medium">
-                          ${item.totalPrice.toLocaleString()}
+                          ${formatPrice(item.total_price).toLocaleString()}
                         </td>
                       </tr>
                     ))}
@@ -153,7 +151,7 @@ export default async function QuoteDetailPage({
                         Total:
                       </td>
                       <td className="text-right py-3 text-lg font-bold">
-                        ${quote.totalPrice.toLocaleString()}
+                        ${formatPrice(quote.total_price).toLocaleString()}
                       </td>
                     </tr>
                   </tfoot>
@@ -189,7 +187,9 @@ export default async function QuoteDetailPage({
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-secondary-foreground">Subtotal:</span>
-                  <span>${quote.totalPrice.toLocaleString()}</span>
+                  <span>
+                    ${formatPrice(quote.total_price).toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-secondary-foreground">Tax (0%):</span>
@@ -202,7 +202,9 @@ export default async function QuoteDetailPage({
                 <hr />
                 <div className="flex justify-between font-bold">
                   <span>Total:</span>
-                  <span>${quote.totalPrice.toLocaleString()}</span>
+                  <span>
+                    ${formatPrice(quote.total_price).toLocaleString()}
+                  </span>
                 </div>
               </div>
             </CardContent>
