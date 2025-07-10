@@ -23,6 +23,7 @@ def log_lead_creation(sender, instance, created, **kwargs):
             InteractionLog.objects.create(
                 user=user,
                 lead=instance,
+                organization=user.organization or instance.organization,
                 type='note',
                 summary=f"New lead created: {instance.name} from {instance.company or 'Unknown Company'}"
             )
@@ -62,6 +63,7 @@ def log_lead_status_change_post_save(sender, instance, created, **kwargs):
             InteractionLog.objects.create(
                 user=instance.assigned_to,
                 lead=instance,
+                organization=instance.assigned_to.organization or instance.organization,
                 type='note',
                 summary=f"Lead {instance.name} {action}"
             )
@@ -81,6 +83,7 @@ def log_opportunity_creation(sender, instance, created, **kwargs):
                 user=user,
                 opportunity=instance,
                 contact=instance.contact,
+                organization=user.organization or instance.organization,
                 type='note',
                 summary=f"New opportunity created: {instance.name} worth ${instance.amount:,.2f}"
             )
@@ -123,6 +126,7 @@ def log_opportunity_stage_change_post_save(sender, instance, created, **kwargs):
                 user=instance.owner,
                 opportunity=instance,
                 contact=instance.contact,
+                organization=instance.owner.organization or instance.organization,
                 type='note',
                 summary=f"Opportunity {instance.name} {action}"
             )
@@ -163,6 +167,7 @@ def log_opportunity_amount_change_post_save(sender, instance, created, **kwargs)
                 user=instance.owner,
                 opportunity=instance,
                 contact=instance.contact,
+                organization=instance.owner.organization or instance.organization,
                 type='note',
                 summary=f"Opportunity value {direction} from ${instance._old_amount:,.2f} to ${instance._new_amount:,.2f}"
             )
@@ -187,6 +192,7 @@ def log_quote_creation(sender, instance, created, **kwargs):
                 user=instance.created_by,
                 opportunity=instance.opportunity,
                 contact=instance.opportunity.contact,
+                organization=instance.created_by.organization or instance.opportunity.organization or instance.organization,
                 type='note',
                 summary=f"Quote created: {instance.title} for ${instance.total_price:,.2f}"
             )
@@ -233,6 +239,7 @@ def create_task_completion_log(task, user):
         lead=log_lead,
         contact=log_contact,
         opportunity=log_opportunity,
+        organization=user.organization or (log_lead and log_lead.organization) or (log_opportunity and log_opportunity.organization),
         type=task.type if task.type in ['call', 'email', 'meeting'] else 'note',
         summary=summary
     )
@@ -243,11 +250,22 @@ def create_manual_interaction_log(user, interaction_type, summary, lead=None, co
     Helper function to create manual interaction logs.
     This can be used from views for custom interactions.
     """
+    # Determine organization from user or related entities
+    organization = user.organization
+    if not organization:
+        if lead and lead.organization:
+            organization = lead.organization
+        elif opportunity and opportunity.organization:
+            organization = opportunity.organization
+        elif contact and contact.organization:
+            organization = contact.organization
+    
     InteractionLog.objects.create(
         user=user,
         lead=lead,
         contact=contact,
         opportunity=opportunity,
+        organization=organization,
         type=interaction_type,
         summary=summary
     )
@@ -263,6 +281,7 @@ def create_lead_conversion_log(lead, opportunity, user):
         lead=lead,
         opportunity=opportunity,
         contact=opportunity.contact,
+        organization=user.organization or lead.organization or opportunity.organization,
         type='note',
         summary=f"Lead {lead.name} successfully converted to opportunity: {opportunity.name}"
     )
