@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getUser } from "@/lib/auth";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -31,11 +33,25 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [organizationName, setOrganizationName] = useState<string>("SALES CRM");
+
+  useEffect(() => {
+    getUser()
+      .then((user) => {
+        setOrganizationName(user.organization_name || "SALES CRM");
+      })
+      .catch(() => setOrganizationName("SALES CRM"));
+  }, []);
 
   return (
     <div className="flex h-full w-64 flex-col bg-background shadow-sm">
       <div className="flex h-16 items-center px-6">
-        <h1 className="text-xl font-bold text-foreground">SALES CRM</h1>
+        <h1
+          className="text-xl font-bold text-foreground truncate"
+          title={organizationName}
+        >
+          {organizationName}
+        </h1>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navigation.map((item) => {

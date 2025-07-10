@@ -17,4 +17,7 @@ export interface PatchedUserProfile {
   /** @maxLength 150 */
   last_name?: string;
   readonly role?: RoleEnum;
+  /** @nullable */
+  readonly organization?: number | null;
+  readonly organization_name?: string;
 }

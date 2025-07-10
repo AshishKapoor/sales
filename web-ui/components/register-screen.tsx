@@ -16,14 +16,24 @@ export function RegisterScreen({
     confirmPassword: "",
     firstName: "",
     lastName: "",
+    createOrganization: false,
+    organizationName: "",
+    organizationDescription: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = e.target;
+    if (type === "checkbox") {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData((prev) => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +53,11 @@ export function RegisterScreen({
       return;
     }
 
+    if (formData.createOrganization && !formData.organizationName.trim()) {
+      setError("Organization name is required when creating an organization");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setSuccess("");
@@ -52,10 +67,16 @@ export function RegisterScreen({
         formData.email,
         formData.password,
         formData.firstName,
-        formData.lastName
+        formData.lastName,
+        formData.createOrganization,
+        formData.organizationName,
+        formData.organizationDescription
       );
       // Registration successful
-      setSuccess("Account created successfully! Redirecting to login...");
+      const successMessage = formData.createOrganization
+        ? "Account and organization created successfully! You're now the admin. Redirecting to login..."
+        : "Account created successfully! Redirecting to login...";
+      setSuccess(successMessage);
       setTimeout(() => {
         onBackToLogin();
       }, 2000);
@@ -178,6 +199,66 @@ export function RegisterScreen({
             onChange={handleChange}
             className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary"
           />
+        </div>
+
+        <div className="mb-4 p-4 border rounded bg-gray-50">
+          <div className="flex items-center mb-3">
+            <input
+              id="createOrganization"
+              name="createOrganization"
+              type="checkbox"
+              checked={formData.createOrganization}
+              onChange={handleChange}
+              className="mr-2 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+            />
+            <label className="text-sm font-medium" htmlFor="createOrganization">
+              Create a new organization
+            </label>
+          </div>
+          <p className="text-xs text-gray-600 mb-3">
+            Check this if you're setting up Sales CRM for your company. You'll
+            become the admin and can invite team members later.
+          </p>
+
+          {formData.createOrganization && (
+            <div className="space-y-3">
+              <div>
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="organizationName"
+                >
+                  Organization Name *
+                </label>
+                <input
+                  id="organizationName"
+                  name="organizationName"
+                  type="text"
+                  required={formData.createOrganization}
+                  value={formData.organizationName}
+                  onChange={handleChange}
+                  placeholder="e.g., Acme Corp"
+                  className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary"
+                />
+              </div>
+              <div>
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="organizationDescription"
+                >
+                  Organization Description (Optional)
+                </label>
+                <textarea
+                  id="organizationDescription"
+                  name="organizationDescription"
+                  value={formData.organizationDescription}
+                  onChange={handleChange}
+                  placeholder="Brief description of your organization"
+                  rows={2}
+                  className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary resize-none"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <button

@@ -6,6 +6,7 @@ from .views import (
     InteractionLogViewSet,
     LeadViewSet,
     OpportunityViewSet,
+    OrganizationViewSet,
     ProductViewSet,
     QuoteLineItemViewSet,
     QuoteViewSet,
@@ -14,6 +15,9 @@ from .views import (
 )
 
 router = DefaultRouter()
+
+# Organization management
+router.register('organizations', OrganizationViewSet, basename='organization')
 
 # User management
 router.register('users', UserViewSet, basename='user')

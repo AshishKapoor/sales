@@ -22,4 +22,7 @@ export interface User {
   /** @maxLength 150 */
   last_name?: string;
   role?: RoleEnum;
+  /** @nullable */
+  organization?: number | null;
+  readonly organization_name: string;
 }

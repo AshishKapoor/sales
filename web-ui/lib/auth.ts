@@ -221,7 +221,10 @@ export async function register(
   email: string,
   password: string,
   firstName?: string,
-  lastName?: string
+  lastName?: string,
+  createOrganization?: boolean,
+  organizationName?: string,
+  organizationDescription?: string
 ) {
   const response = await fetch(`${SALES_BASE_URL}/api/v1/register/`, {
     method: "POST",
@@ -233,7 +236,10 @@ export async function register(
       confirm_password: password,
       first_name: firstName || "",
       last_name: lastName || "",
-      role: "sales_rep", // Default role
+      role: "sales_rep", // Default role - will be changed to admin if creating organization
+      create_organization: createOrganization || false,
+      organization_name: organizationName || "",
+      organization_description: organizationDescription || "",
     }),
   });
   if (!response.ok) {
@@ -248,7 +254,47 @@ export async function register(
     if (errorData?.confirm_password) {
       throw new Error(errorData.confirm_password[0]);
     }
+    if (errorData?.organization_name) {
+      throw new Error(errorData.organization_name[0]);
+    }
     throw new Error(errorData?.detail || "Registration failed");
   }
   return await response.json();
+}
+
+export async function createOrganization(
+  name: string,
+  description: string = ""
+) {
+  try {
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error("No authentication token available");
+    }
+
+    const response = await fetch(
+      `${SALES_BASE_URL}/api/v1/create-organization/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim(),
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData?.error || "Failed to create organization");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating organization:", error);
+    throw error;
+  }
 }

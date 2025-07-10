@@ -9,9 +9,11 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LoginScreen } from "@/components/login-screen";
-import { isLoggedIn } from "@/lib/auth";
+import { NoOrganizationScreen } from "@/components/no-organization-screen";
+import { isLoggedIn, getUser } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { User } from "@/types";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,16 +30,65 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [auth, setAuth] = useState<boolean | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUserData = async () => {
+    try {
+      if (isLoggedIn()) {
+        const userData = await getUser();
+        setUser(userData);
+        setAuth(true);
+      } else {
+        setAuth(false);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      setAuth(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setAuth(isLoggedIn());
+    fetchUserData();
   }, []);
+
+  const handleOrganizationCreated = () => {
+    // Refresh user data after organization is created
+    fetchUserData();
+  };
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <html lang="en" suppressHydrationWarning>
+        <body className={inter.className}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <div className="flex min-h-screen items-center justify-center bg-muted">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                <p className="mt-2 text-sm text-muted-foreground">Loading...</p>
+              </div>
+            </div>
+          </ThemeProvider>
+        </body>
+      </html>
+    );
+  }
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {auth === null ? null : auth ? (
+          {!auth ? (
+            <LoginScreen />
+          ) : user && !user.organization ? (
+            <NoOrganizationScreen
+              user={user}
+              onOrganizationCreated={handleOrganizationCreated}
+            />
+          ) : (
             <div className="flex h-screen bg-muted shadow-lg">
               <Sidebar />
               <div className="flex flex-1 flex-col overflow-hidden">
@@ -46,8 +97,6 @@ export default function RootLayout({
                 <Toaster />
               </div>
             </div>
-          ) : (
-            <LoginScreen />
           )}
         </ThemeProvider>
       </body>

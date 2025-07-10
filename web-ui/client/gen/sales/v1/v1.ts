@@ -23,11 +23,13 @@ import type {
   InteractionLog,
   Lead,
   Opportunity,
+  Organization,
   PaginatedAccountList,
   PaginatedContactList,
   PaginatedInteractionLogList,
   PaginatedLeadList,
   PaginatedOpportunityList,
+  PaginatedOrganizationList,
   PaginatedProductList,
   PaginatedQuoteLineItemList,
   PaginatedQuoteList,
@@ -37,6 +39,7 @@ import type {
   PatchedInteractionLog,
   PatchedLead,
   PatchedOpportunity,
+  PatchedOrganization,
   PatchedProduct,
   PatchedQuote,
   PatchedQuoteLineItem,
@@ -55,6 +58,7 @@ import type {
   V1InteractionsListParams,
   V1LeadsListParams,
   V1OpportunitiesListParams,
+  V1OrganizationsListParams,
   V1ProductsListParams,
   V1QuoteLineItemsListParams,
   V1QuotesListParams,
@@ -644,6 +648,49 @@ export const useV1ContactsDestroy = <TError = unknown>(
     ...query
   }
 }
+/**
+ * Log a manual interaction with this contact
+ */
+export const v1ContactsLogInteractionCreate = (
+    id: number,
+    contact: NonReadonly<Contact>,
+ ) => {
+    return httpSalesClient<Contact>(
+    {url: `/api/v1/contacts/${id}/log_interaction/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: contact
+    },
+    );
+  }
+
+
+
+export const getV1ContactsLogInteractionCreateMutationFetcher = (id: number, ) => {
+  return (_: Key, { arg }: { arg: NonReadonly<Contact> }): Promise<Contact> => {
+    return v1ContactsLogInteractionCreate(id, arg);
+  }
+}
+export const getV1ContactsLogInteractionCreateMutationKey = (id: number,) => [`/api/v1/contacts/${id}/log_interaction/`] as const;
+
+export type V1ContactsLogInteractionCreateMutationResult = NonNullable<Awaited<ReturnType<typeof v1ContactsLogInteractionCreate>>>
+export type V1ContactsLogInteractionCreateMutationError = unknown
+
+export const useV1ContactsLogInteractionCreate = <TError = unknown>(
+  id: number, options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof v1ContactsLogInteractionCreate>>, TError, Key, NonReadonly<Contact>, Awaited<ReturnType<typeof v1ContactsLogInteractionCreate>>> & { swrKey?: string }, }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getV1ContactsLogInteractionCreateMutationKey(id);
+  const swrFn = getV1ContactsLogInteractionCreateMutationFetcher(id);
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
 export const v1InteractionsList = (
     params?: V1InteractionsListParams,
  ) => {
@@ -1129,6 +1176,49 @@ export const useV1LeadsConvertToOpportunityCreate = <TError = unknown>(
     ...query
   }
 }
+/**
+ * Log a manual interaction with this lead
+ */
+export const v1LeadsLogInteractionCreate = (
+    id: number,
+    lead: NonReadonly<Lead>,
+ ) => {
+    return httpSalesClient<Lead>(
+    {url: `/api/v1/leads/${id}/log_interaction/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: lead
+    },
+    );
+  }
+
+
+
+export const getV1LeadsLogInteractionCreateMutationFetcher = (id: number, ) => {
+  return (_: Key, { arg }: { arg: NonReadonly<Lead> }): Promise<Lead> => {
+    return v1LeadsLogInteractionCreate(id, arg);
+  }
+}
+export const getV1LeadsLogInteractionCreateMutationKey = (id: number,) => [`/api/v1/leads/${id}/log_interaction/`] as const;
+
+export type V1LeadsLogInteractionCreateMutationResult = NonNullable<Awaited<ReturnType<typeof v1LeadsLogInteractionCreate>>>
+export type V1LeadsLogInteractionCreateMutationError = unknown
+
+export const useV1LeadsLogInteractionCreate = <TError = unknown>(
+  id: number, options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof v1LeadsLogInteractionCreate>>, TError, Key, NonReadonly<Lead>, Awaited<ReturnType<typeof v1LeadsLogInteractionCreate>>> & { swrKey?: string }, }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getV1LeadsLogInteractionCreateMutationKey(id);
+  const swrFn = getV1LeadsLogInteractionCreateMutationFetcher(id);
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
 export const v1MeRetrieve = (
     
  ) => {
@@ -1153,6 +1243,41 @@ export const useV1MeRetrieve = <TError = unknown>(
   const isEnabled = swrOptions?.enabled !== false
   const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getV1MeRetrieveKey() : null);
   const swrFn = () => v1MeRetrieve()
+
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+/**
+ * View to handle users without organization
+ */
+export const v1NoOrganizationRetrieve = (
+    
+ ) => {
+    return httpSalesClient<void>(
+    {url: `/api/v1/no-organization/`, method: 'GET'
+    },
+    );
+  }
+
+
+
+export const getV1NoOrganizationRetrieveKey = () => [`/api/v1/no-organization/`] as const;
+
+export type V1NoOrganizationRetrieveQueryResult = NonNullable<Awaited<ReturnType<typeof v1NoOrganizationRetrieve>>>
+export type V1NoOrganizationRetrieveQueryError = unknown
+
+export const useV1NoOrganizationRetrieve = <TError = unknown>(
+   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof v1NoOrganizationRetrieve>>, TError> & { swrKey?: Key, enabled?: boolean },  }
+) => {
+  const {swr: swrOptions} = options ?? {}
+
+  const isEnabled = swrOptions?.enabled !== false
+  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getV1NoOrganizationRetrieveKey() : null);
+  const swrFn = () => v1NoOrganizationRetrieve()
 
   const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
 
@@ -1383,6 +1508,49 @@ export const useV1OpportunitiesDestroy = <TError = unknown>(
   }
 }
 /**
+ * Log a manual interaction with this opportunity
+ */
+export const v1OpportunitiesLogInteractionCreate = (
+    id: number,
+    opportunity: NonReadonly<Opportunity>,
+ ) => {
+    return httpSalesClient<Opportunity>(
+    {url: `/api/v1/opportunities/${id}/log_interaction/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: opportunity
+    },
+    );
+  }
+
+
+
+export const getV1OpportunitiesLogInteractionCreateMutationFetcher = (id: number, ) => {
+  return (_: Key, { arg }: { arg: NonReadonly<Opportunity> }): Promise<Opportunity> => {
+    return v1OpportunitiesLogInteractionCreate(id, arg);
+  }
+}
+export const getV1OpportunitiesLogInteractionCreateMutationKey = (id: number,) => [`/api/v1/opportunities/${id}/log_interaction/`] as const;
+
+export type V1OpportunitiesLogInteractionCreateMutationResult = NonNullable<Awaited<ReturnType<typeof v1OpportunitiesLogInteractionCreate>>>
+export type V1OpportunitiesLogInteractionCreateMutationError = unknown
+
+export const useV1OpportunitiesLogInteractionCreate = <TError = unknown>(
+  id: number, options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof v1OpportunitiesLogInteractionCreate>>, TError, Key, NonReadonly<Opportunity>, Awaited<ReturnType<typeof v1OpportunitiesLogInteractionCreate>>> & { swrKey?: string }, }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getV1OpportunitiesLogInteractionCreateMutationKey(id);
+  const swrFn = getV1OpportunitiesLogInteractionCreateMutationFetcher(id);
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+/**
  * Get all quotes for this opportunity
  */
 export const v1OpportunitiesQuotesRetrieve = (
@@ -1446,6 +1614,313 @@ export const useV1OpportunitiesPipelineValueRetrieve = <TError = unknown>(
   const swrFn = () => v1OpportunitiesPipelineValueRetrieve()
 
   const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+export const v1OrganizationsList = (
+    params?: V1OrganizationsListParams,
+ ) => {
+    return httpSalesClient<PaginatedOrganizationList>(
+    {url: `/api/v1/organizations/`, method: 'GET',
+        params
+    },
+    );
+  }
+
+
+
+export const getV1OrganizationsListKey = (params?: V1OrganizationsListParams,) => [`/api/v1/organizations/`, ...(params ? [params]: [])] as const;
+
+export type V1OrganizationsListQueryResult = NonNullable<Awaited<ReturnType<typeof v1OrganizationsList>>>
+export type V1OrganizationsListQueryError = unknown
+
+export const useV1OrganizationsList = <TError = unknown>(
+  params?: V1OrganizationsListParams, options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof v1OrganizationsList>>, TError> & { swrKey?: Key, enabled?: boolean },  }
+) => {
+  const {swr: swrOptions} = options ?? {}
+
+  const isEnabled = swrOptions?.enabled !== false
+  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getV1OrganizationsListKey(params) : null);
+  const swrFn = () => v1OrganizationsList(params)
+
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+export const v1OrganizationsCreate = (
+    organization: NonReadonly<Organization>,
+ ) => {
+    return httpSalesClient<Organization>(
+    {url: `/api/v1/organizations/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: organization
+    },
+    );
+  }
+
+
+
+export const getV1OrganizationsCreateMutationFetcher = ( ) => {
+  return (_: Key, { arg }: { arg: NonReadonly<Organization> }): Promise<Organization> => {
+    return v1OrganizationsCreate(arg);
+  }
+}
+export const getV1OrganizationsCreateMutationKey = () => [`/api/v1/organizations/`] as const;
+
+export type V1OrganizationsCreateMutationResult = NonNullable<Awaited<ReturnType<typeof v1OrganizationsCreate>>>
+export type V1OrganizationsCreateMutationError = unknown
+
+export const useV1OrganizationsCreate = <TError = unknown>(
+   options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof v1OrganizationsCreate>>, TError, Key, NonReadonly<Organization>, Awaited<ReturnType<typeof v1OrganizationsCreate>>> & { swrKey?: string }, }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getV1OrganizationsCreateMutationKey();
+  const swrFn = getV1OrganizationsCreateMutationFetcher();
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+export const v1OrganizationsRetrieve = (
+    id: number,
+ ) => {
+    return httpSalesClient<Organization>(
+    {url: `/api/v1/organizations/${id}/`, method: 'GET'
+    },
+    );
+  }
+
+
+
+export const getV1OrganizationsRetrieveKey = (id: number,) => [`/api/v1/organizations/${id}/`] as const;
+
+export type V1OrganizationsRetrieveQueryResult = NonNullable<Awaited<ReturnType<typeof v1OrganizationsRetrieve>>>
+export type V1OrganizationsRetrieveQueryError = unknown
+
+export const useV1OrganizationsRetrieve = <TError = unknown>(
+  id: number, options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof v1OrganizationsRetrieve>>, TError> & { swrKey?: Key, enabled?: boolean },  }
+) => {
+  const {swr: swrOptions} = options ?? {}
+
+  const isEnabled = swrOptions?.enabled !== false && !!(id)
+  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getV1OrganizationsRetrieveKey(id) : null);
+  const swrFn = () => v1OrganizationsRetrieve(id)
+
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+export const v1OrganizationsUpdate = (
+    id: number,
+    organization: NonReadonly<Organization>,
+ ) => {
+    return httpSalesClient<Organization>(
+    {url: `/api/v1/organizations/${id}/`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: organization
+    },
+    );
+  }
+
+
+
+export const getV1OrganizationsUpdateMutationFetcher = (id: number, ) => {
+  return (_: Key, { arg }: { arg: NonReadonly<Organization> }): Promise<Organization> => {
+    return v1OrganizationsUpdate(id, arg);
+  }
+}
+export const getV1OrganizationsUpdateMutationKey = (id: number,) => [`/api/v1/organizations/${id}/`] as const;
+
+export type V1OrganizationsUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof v1OrganizationsUpdate>>>
+export type V1OrganizationsUpdateMutationError = unknown
+
+export const useV1OrganizationsUpdate = <TError = unknown>(
+  id: number, options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof v1OrganizationsUpdate>>, TError, Key, NonReadonly<Organization>, Awaited<ReturnType<typeof v1OrganizationsUpdate>>> & { swrKey?: string }, }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getV1OrganizationsUpdateMutationKey(id);
+  const swrFn = getV1OrganizationsUpdateMutationFetcher(id);
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+export const v1OrganizationsPartialUpdate = (
+    id: number,
+    patchedOrganization: NonReadonly<PatchedOrganization>,
+ ) => {
+    return httpSalesClient<Organization>(
+    {url: `/api/v1/organizations/${id}/`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: patchedOrganization
+    },
+    );
+  }
+
+
+
+export const getV1OrganizationsPartialUpdateMutationFetcher = (id: number, ) => {
+  return (_: Key, { arg }: { arg: NonReadonly<PatchedOrganization> }): Promise<Organization> => {
+    return v1OrganizationsPartialUpdate(id, arg);
+  }
+}
+export const getV1OrganizationsPartialUpdateMutationKey = (id: number,) => [`/api/v1/organizations/${id}/`] as const;
+
+export type V1OrganizationsPartialUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof v1OrganizationsPartialUpdate>>>
+export type V1OrganizationsPartialUpdateMutationError = unknown
+
+export const useV1OrganizationsPartialUpdate = <TError = unknown>(
+  id: number, options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof v1OrganizationsPartialUpdate>>, TError, Key, NonReadonly<PatchedOrganization>, Awaited<ReturnType<typeof v1OrganizationsPartialUpdate>>> & { swrKey?: string }, }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getV1OrganizationsPartialUpdateMutationKey(id);
+  const swrFn = getV1OrganizationsPartialUpdateMutationFetcher(id);
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+export const v1OrganizationsDestroy = (
+    id: number,
+ ) => {
+    return httpSalesClient<void>(
+    {url: `/api/v1/organizations/${id}/`, method: 'DELETE'
+    },
+    );
+  }
+
+
+
+export const getV1OrganizationsDestroyMutationFetcher = (id: number, ) => {
+  return (_: Key, __: { arg: Arguments }): Promise<void> => {
+    return v1OrganizationsDestroy(id);
+  }
+}
+export const getV1OrganizationsDestroyMutationKey = (id: number,) => [`/api/v1/organizations/${id}/`] as const;
+
+export type V1OrganizationsDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof v1OrganizationsDestroy>>>
+export type V1OrganizationsDestroyMutationError = unknown
+
+export const useV1OrganizationsDestroy = <TError = unknown>(
+  id: number, options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof v1OrganizationsDestroy>>, TError, Key, Arguments, Awaited<ReturnType<typeof v1OrganizationsDestroy>>> & { swrKey?: string }, }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getV1OrganizationsDestroyMutationKey(id);
+  const swrFn = getV1OrganizationsDestroyMutationFetcher(id);
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+/**
+ * Add a user to this organization (admin only)
+ */
+export const v1OrganizationsAddUserCreate = (
+    id: number,
+    organization: NonReadonly<Organization>,
+ ) => {
+    return httpSalesClient<Organization>(
+    {url: `/api/v1/organizations/${id}/add_user/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: organization
+    },
+    );
+  }
+
+
+
+export const getV1OrganizationsAddUserCreateMutationFetcher = (id: number, ) => {
+  return (_: Key, { arg }: { arg: NonReadonly<Organization> }): Promise<Organization> => {
+    return v1OrganizationsAddUserCreate(id, arg);
+  }
+}
+export const getV1OrganizationsAddUserCreateMutationKey = (id: number,) => [`/api/v1/organizations/${id}/add_user/`] as const;
+
+export type V1OrganizationsAddUserCreateMutationResult = NonNullable<Awaited<ReturnType<typeof v1OrganizationsAddUserCreate>>>
+export type V1OrganizationsAddUserCreateMutationError = unknown
+
+export const useV1OrganizationsAddUserCreate = <TError = unknown>(
+  id: number, options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof v1OrganizationsAddUserCreate>>, TError, Key, NonReadonly<Organization>, Awaited<ReturnType<typeof v1OrganizationsAddUserCreate>>> & { swrKey?: string }, }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getV1OrganizationsAddUserCreateMutationKey(id);
+  const swrFn = getV1OrganizationsAddUserCreateMutationFetcher(id);
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+/**
+ * Remove a user from this organization (admin only)
+ */
+export const v1OrganizationsRemoveUserCreate = (
+    id: number,
+    organization: NonReadonly<Organization>,
+ ) => {
+    return httpSalesClient<Organization>(
+    {url: `/api/v1/organizations/${id}/remove_user/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: organization
+    },
+    );
+  }
+
+
+
+export const getV1OrganizationsRemoveUserCreateMutationFetcher = (id: number, ) => {
+  return (_: Key, { arg }: { arg: NonReadonly<Organization> }): Promise<Organization> => {
+    return v1OrganizationsRemoveUserCreate(id, arg);
+  }
+}
+export const getV1OrganizationsRemoveUserCreateMutationKey = (id: number,) => [`/api/v1/organizations/${id}/remove_user/`] as const;
+
+export type V1OrganizationsRemoveUserCreateMutationResult = NonNullable<Awaited<ReturnType<typeof v1OrganizationsRemoveUserCreate>>>
+export type V1OrganizationsRemoveUserCreateMutationError = unknown
+
+export const useV1OrganizationsRemoveUserCreate = <TError = unknown>(
+  id: number, options?: { swr?:SWRMutationConfiguration<Awaited<ReturnType<typeof v1OrganizationsRemoveUserCreate>>, TError, Key, NonReadonly<Organization>, Awaited<ReturnType<typeof v1OrganizationsRemoveUserCreate>>> & { swrKey?: string }, }
+) => {
+
+  const {swr: swrOptions} = options ?? {}
+
+  const swrKey = swrOptions?.swrKey ?? getV1OrganizationsRemoveUserCreateMutationKey(id);
+  const swrFn = getV1OrganizationsRemoveUserCreateMutationFetcher(id);
+
+  const query = useSWRMutation(swrKey, swrFn, swrOptions)
 
   return {
     swrKey,
@@ -1667,6 +2142,41 @@ export const useV1ProductsDestroy = <TError = unknown>(
   const swrFn = getV1ProductsDestroyMutationFetcher(id);
 
   const query = useSWRMutation(swrKey, swrFn, swrOptions)
+
+  return {
+    swrKey,
+    ...query
+  }
+}
+/**
+ * Get products available for creating quotes
+ */
+export const v1ProductsAvailableForQuotesRetrieve = (
+    
+ ) => {
+    return httpSalesClient<Product>(
+    {url: `/api/v1/products/available_for_quotes/`, method: 'GET'
+    },
+    );
+  }
+
+
+
+export const getV1ProductsAvailableForQuotesRetrieveKey = () => [`/api/v1/products/available_for_quotes/`] as const;
+
+export type V1ProductsAvailableForQuotesRetrieveQueryResult = NonNullable<Awaited<ReturnType<typeof v1ProductsAvailableForQuotesRetrieve>>>
+export type V1ProductsAvailableForQuotesRetrieveQueryError = unknown
+
+export const useV1ProductsAvailableForQuotesRetrieve = <TError = unknown>(
+   options?: { swr?:SWRConfiguration<Awaited<ReturnType<typeof v1ProductsAvailableForQuotesRetrieve>>, TError> & { swrKey?: Key, enabled?: boolean },  }
+) => {
+  const {swr: swrOptions} = options ?? {}
+
+  const isEnabled = swrOptions?.enabled !== false
+  const swrKey = swrOptions?.swrKey ?? (() => isEnabled ? getV1ProductsAvailableForQuotesRetrieveKey() : null);
+  const swrFn = () => v1ProductsAvailableForQuotesRetrieve()
+
+  const query = useSwr<Awaited<ReturnType<typeof swrFn>>, TError>(swrKey, swrFn, swrOptions)
 
   return {
     swrKey,

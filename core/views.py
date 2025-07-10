@@ -16,6 +16,7 @@ from .models import (
     InteractionLog,
     Lead,
     Opportunity,
+    Organization,
     Product,
     Quote,
     QuoteLineItem,
@@ -27,6 +28,7 @@ from .serializers import (
     InteractionLogSerializer,
     LeadSerializer,
     OpportunitySerializer,
+    OrganizationSerializer,
     ProductSerializer,
     QuoteLineItemSerializer,
     QuoteSerializer,
@@ -139,56 +141,236 @@ class ChangePasswordView(APIView):
 
 User = get_user_model()
 
+
+# Custom Permission for organization-based access
+class HasOrganizationAccess(permissions.BasePermission):
+    """
+    Permission to check if user belongs to an organization
+    """
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return request.user.organization is not None
+
+    def has_object_permission(self, request, view, obj):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        if request.user.organization is None:
+            return False
+        
+        # Check if object belongs to user's organization
+        if hasattr(obj, 'organization'):
+            return obj.organization == request.user.organization
+        return True
+
+
+class NoOrganizationView(APIView):
+    """
+    View to handle users without organization
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        if request.user.organization is not None:
+            return Response({'has_organization': True})
+        return Response({
+            'has_organization': False,
+            'message': 'Please contact your company\'s administrator to be added to an organization.'
+        })
+
+
+class CreateOrganizationForUserView(APIView):
+    """
+    Allow users without organization to create one and join it
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        # Only allow users without organization to create one
+        if request.user.organization is not None:
+            return Response(
+                {'error': 'You already belong to an organization'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        name = request.data.get('name', '').strip()
+        description = request.data.get('description', '').strip()
+        
+        if not name:
+            return Response(
+                {'error': 'Organization name is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if organization name already exists
+        if Organization.objects.filter(name=name).exists():
+            return Response(
+                {'error': 'An organization with this name already exists'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Create the organization
+            organization = Organization.objects.create(
+                name=name,
+                description=description
+            )
+            
+            # Update user to join the organization and make them admin
+            request.user.organization = organization
+            request.user.role = 'admin'  # Make them admin of their new organization
+            request.user.save()
+            
+            return Response(OrganizationSerializer(organization).data, status=status.HTTP_201_CREATED)
+        except Exception:
+            return Response(
+                {'error': 'Failed to create organization'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class OrganizationViewSet(viewsets.ModelViewSet):
+    queryset = Organization.objects.all()
+    serializer_class = OrganizationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+
+    def get_queryset(self):
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return Organization.objects.none()
+        
+        # Only admins can see all organizations
+        if self.request.user.role == 'admin':
+            return Organization.objects.all().order_by('name')
+        # Others can only see their own organization
+        elif self.request.user.organization:
+            return Organization.objects.filter(id=self.request.user.organization.id)
+        return Organization.objects.none()
+
+    def get_permissions(self):
+        """
+        Only admins can create/update/delete organizations
+        """
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            if hasattr(self.request, 'user') and self.request.user.is_authenticated and self.request.user.role != 'admin':
+                self.permission_classes = [permissions.IsAuthenticated]
+                return [permission() for permission in self.permission_classes]
+        return super().get_permissions()
+
+    @action(detail=True, methods=['post'])
+    def add_user(self, request, pk=None):
+        """Add a user to this organization (admin only)"""
+        if not request.user.is_authenticated or request.user.role != 'admin':
+            return Response(
+                {'error': 'Only admins can add users to organizations'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        organization = self.get_object()
+        user_id = request.data.get('user_id')
+        
+        if not user_id:
+            return Response(
+                {'error': 'user_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            user = User.objects.get(id=user_id)
+            user.organization = organization
+            user.save()
+            return Response({'message': f'User {user.username} added to {organization.name}'})
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'User not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    @action(detail=True, methods=['post'])
+    def remove_user(self, request, pk=None):
+        """Remove a user from this organization (admin only)"""
+        if not request.user.is_authenticated or request.user.role != 'admin':
+            return Response(
+                {'error': 'Only admins can remove users from organizations'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        organization = self.get_object()
+        user_id = request.data.get('user_id')
+        
+        if not user_id:
+            return Response(
+                {'error': 'user_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            user = User.objects.get(id=user_id, organization=organization)
+            user.organization = None
+            user.save()
+            return Response({'message': f'User {user.username} removed from {organization.name}'})
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'User not found in this organization'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     pagination_class = None  # Disable pagination for user APIs
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['email', 'first_name', 'last_name']
 
     def get_queryset(self):
-        # Managers and admins can see all users, sales reps only see themselves
-        if self.request.user.role in ['admin', 'manager']:
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return User.objects.none()
+        
+        # Users without organization can't see any users
+        if not self.request.user.organization:
+            return User.objects.none()
+        
+        # Admins can see all users in all organizations
+        if self.request.user.role == 'admin':
             return User.objects.all()
-        return User.objects.filter(id=self.request.user.id)
+        
+        # Managers and sales reps can only see users in their organization
+        return User.objects.filter(organization=self.request.user.organization)
 
 
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'industry', 'website']
 
     def get_queryset(self):
-        queryset = Account.objects.all().order_by('-created_at')
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return Account.objects.none()
         
-        # Filter by assignment based on user role
-        if self.request.user.role == 'sales_rep':
-            # Sales reps can only see accounts from their assigned leads and owned opportunities
-            assigned_lead_accounts = Lead.objects.filter(
-                assigned_to=self.request.user,
-                company__isnull=False
-            ).exclude(company='').values_list('company', flat=True)
-            
-            owned_opportunity_accounts = Opportunity.objects.filter(
-                owner=self.request.user
-            ).values_list('account', flat=True)
-            
-            # Get accounts by name from leads or by ID from opportunities
-            queryset = queryset.filter(
-                Q(name__in=assigned_lead_accounts) |
-                Q(id__in=owned_opportunity_accounts)
-            ).distinct()
+        # Users without organization can't see any accounts
+        if not self.request.user.organization:
+            return Account.objects.none()
         
-        return queryset
+        # All users in the organization can see all accounts in their organization
+        return Account.objects.filter(organization=self.request.user.organization).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        # Automatically set organization for new accounts
+        serializer.save(organization=self.request.user.organization)
 
     @action(detail=True, methods=['get'])
     def contacts(self, request, pk=None):
         """Get all contacts associated with this account"""
         account = self.get_object()
-        contacts = Contact.objects.filter(account=account)
+        contacts = Contact.objects.filter(account=account, organization=self.request.user.organization)
         serializer = ContactSerializer(contacts, many=True)
         return Response(serializer.data)
 
@@ -196,7 +378,7 @@ class AccountViewSet(viewsets.ModelViewSet):
     def opportunities(self, request, pk=None):
         """Get all opportunities associated with this account"""
         account = self.get_object()
-        opportunities = Opportunity.objects.filter(account=account)
+        opportunities = Opportunity.objects.filter(account=account, organization=self.request.user.organization)
         serializer = OpportunitySerializer(opportunities, many=True)
         return Response(serializer.data)
 
@@ -204,31 +386,21 @@ class AccountViewSet(viewsets.ModelViewSet):
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'email', 'phone']
 
     def get_queryset(self):
-        queryset = Contact.objects.all().order_by('-created_at')
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return Contact.objects.none()
         
-        # Filter by assignment based on user role
-        if self.request.user.role == 'sales_rep':
-            # Sales reps can only see contacts from accounts they have access to
-            # (either from assigned leads or owned opportunities)
-            assigned_lead_accounts = Lead.objects.filter(
-                assigned_to=self.request.user,
-                company__isnull=False
-            ).exclude(company='').values_list('company', flat=True)
-            
-            owned_opportunity_accounts = Opportunity.objects.filter(
-                owner=self.request.user
-            ).values_list('account', flat=True)
-            
-            # Get contacts from accessible accounts
-            queryset = queryset.filter(
-                Q(account__name__in=assigned_lead_accounts) |
-                Q(account__id__in=owned_opportunity_accounts)
-            ).distinct()
+        # Users without organization can't see any contacts
+        if not self.request.user.organization:
+            return Contact.objects.none()
+        
+        # All users in the organization can see all contacts in their organization
+        queryset = Contact.objects.filter(organization=self.request.user.organization).order_by('-created_at')
         
         # Filter by account if provided
         account_id = self.request.query_params.get('account', None)
@@ -236,6 +408,10 @@ class ContactViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(account_id=account_id)
             
         return queryset
+
+    def perform_create(self, serializer):
+        # Automatically set organization for new contacts
+        serializer.save(organization=self.request.user.organization)
 
     @action(detail=True, methods=['post'])
     def log_interaction(self, request, pk=None):
@@ -254,7 +430,8 @@ class ContactViewSet(viewsets.ModelViewSet):
             user=request.user,
             contact=contact,
             type=interaction_type,
-            summary=summary
+            summary=summary,
+            organization=request.user.organization
         )
         
         return Response({'status': 'Interaction logged successfully'})
@@ -263,16 +440,21 @@ class ContactViewSet(viewsets.ModelViewSet):
 class LeadViewSet(viewsets.ModelViewSet):
     queryset = Lead.objects.all()
     serializer_class = LeadSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'email', 'company', 'phone']
 
     def get_queryset(self):
-        queryset = Lead.objects.all().order_by('-created_at')
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return Lead.objects.none()
         
-        # Filter by assignment based on user role
-        if self.request.user.role == 'sales_rep':
-            queryset = queryset.filter(assigned_to=self.request.user)
+        # Users without organization can't see any leads
+        if not self.request.user.organization:
+            return Lead.objects.none()
+        
+        # All users in the organization can see all leads in their organization
+        queryset = Lead.objects.filter(organization=self.request.user.organization).order_by('-created_at')
         
         # Filter by status if provided
         status_filter = self.request.query_params.get('status', None)
@@ -286,8 +468,8 @@ class LeadViewSet(viewsets.ModelViewSet):
         if 'assigned_to' not in serializer.validated_data or serializer.validated_data.get('assigned_to') is None:
             serializer.validated_data['assigned_to'] = self.request.user
         
-        # Save the lead - assigned_to should always be set now
-        serializer.save()
+        # Automatically set organization for new leads
+        serializer.save(organization=self.request.user.organization)
 
     @action(detail=True, methods=['post'])
     def convert_to_opportunity(self, request, pk=None):
@@ -302,16 +484,20 @@ class LeadViewSet(viewsets.ModelViewSet):
         
         # Create or get account
         account, created = Account.objects.get_or_create(
-            name=lead.company or f"{lead.name} Company"
+            name=lead.company or f"{lead.name} Company",
+            organization=request.user.organization,
+            defaults={'organization': request.user.organization}
         )
         
         # Create contact
         contact, created = Contact.objects.get_or_create(
             email=lead.email,
+            organization=request.user.organization,
             defaults={
                 'name': lead.name,
                 'phone': lead.phone,
-                'account': account
+                'account': account,
+                'organization': request.user.organization
             }
         )
         
@@ -321,7 +507,8 @@ class LeadViewSet(viewsets.ModelViewSet):
             account=account,
             contact=contact,
             amount=0,  # To be updated later
-            owner=lead.assigned_to or request.user
+            owner=lead.assigned_to or request.user,
+            organization=request.user.organization
         )
         
         # Update lead status
@@ -350,7 +537,8 @@ class LeadViewSet(viewsets.ModelViewSet):
             user=request.user,
             lead=lead,
             type=interaction_type,
-            summary=summary
+            summary=summary,
+            organization=request.user.organization
         )
         
         return Response({'status': 'Interaction logged successfully'})
@@ -359,16 +547,21 @@ class LeadViewSet(viewsets.ModelViewSet):
 class OpportunityViewSet(viewsets.ModelViewSet):
     queryset = Opportunity.objects.all()
     serializer_class = OpportunitySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'account__name', 'contact__name']
 
     def get_queryset(self):
-        queryset = Opportunity.objects.all().order_by('-created_at')
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return Opportunity.objects.none()
         
-        # Filter by ownership based on user role
-        if self.request.user.role == 'sales_rep':
-            queryset = queryset.filter(owner=self.request.user)
+        # Users without organization can't see any opportunities
+        if not self.request.user.organization:
+            return Opportunity.objects.none()
+        
+        # All users in the organization can see all opportunities in their organization
+        queryset = Opportunity.objects.filter(organization=self.request.user.organization).order_by('-created_at')
         
         # Filter by stage if provided
         stage_filter = self.request.query_params.get('stage', None)
@@ -385,8 +578,8 @@ class OpportunityViewSet(viewsets.ModelViewSet):
         else:
             print(f"DEBUG: Opportunity already has owner: {serializer.validated_data.get('owner')}")
         
-        # Save the opportunity - owner should always be set now
-        serializer.save()
+        # Automatically set organization for new opportunities
+        serializer.save(organization=self.request.user.organization)
 
     @action(detail=False, methods=['get'])
     def pipeline_value(self, request):
@@ -399,7 +592,7 @@ class OpportunityViewSet(viewsets.ModelViewSet):
     def quotes(self, request, pk=None):
         """Get all quotes for this opportunity"""
         opportunity = self.get_object()
-        quotes = Quote.objects.filter(opportunity=opportunity)
+        quotes = Quote.objects.filter(opportunity=opportunity, organization=self.request.user.organization)
         serializer = QuoteSerializer(quotes, many=True)
         return Response(serializer.data)
 
@@ -421,7 +614,8 @@ class OpportunityViewSet(viewsets.ModelViewSet):
             opportunity=opportunity,
             contact=opportunity.contact,
             type=interaction_type,
-            summary=summary
+            summary=summary,
+            organization=request.user.organization
         )
         
         return Response({'status': 'Interaction logged successfully'})
@@ -430,16 +624,21 @@ class OpportunityViewSet(viewsets.ModelViewSet):
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description', 'owner__email']
 
     def get_queryset(self):
-        queryset = Task.objects.all().order_by('due_date')
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return Task.objects.none()
         
-        # Filter by ownership
-        if self.request.user.role == 'sales_rep':
-            queryset = queryset.filter(owner=self.request.user)
+        # Users without organization can't see any tasks
+        if not self.request.user.organization:
+            return Task.objects.none()
+        
+        # All users in the organization can see all tasks in their organization
+        queryset = Task.objects.filter(organization=self.request.user.organization).order_by('due_date')
         
         # Filter by status if provided
         status_filter = self.request.query_params.get('status', None)
@@ -449,7 +648,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(owner=self.request.user, organization=self.request.user.organization)
 
     @action(detail=False, methods=['get'])
     def overdue(self, request):
@@ -477,16 +676,21 @@ class TaskViewSet(viewsets.ModelViewSet):
 class InteractionLogViewSet(viewsets.ModelViewSet):
     queryset = InteractionLog.objects.all()
     serializer_class = InteractionLogSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['note', 'lead__name', 'contact__name', 'opportunity__name']
+    search_fields = ['summary', 'lead__name', 'contact__name', 'opportunity__name']
 
     def get_queryset(self):
-        queryset = InteractionLog.objects.all().order_by('-timestamp')
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return InteractionLog.objects.none()
         
-        # Filter by user based on role
-        if self.request.user.role == 'sales_rep':
-            queryset = queryset.filter(user=self.request.user)
+        # Users without organization can't see any interaction logs
+        if not self.request.user.organization:
+            return InteractionLog.objects.none()
+        
+        # All users in the organization can see all interaction logs in their organization
+        queryset = InteractionLog.objects.filter(organization=self.request.user.organization).order_by('-timestamp')
         
         # Filter by lead or opportunity if provided
         lead_id = self.request.query_params.get('lead', None)
@@ -504,27 +708,27 @@ class InteractionLogViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, organization=self.request.user.organization)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'sku', 'description']
+    search_fields = ['name', 'description']
 
     def get_queryset(self):
-        queryset = Product.objects.all()
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return Product.objects.none()
         
-        # Role-based filtering for products
-        if self.request.user.role == 'sales_rep':
-            # Sales reps can only see products that are used in quotes for opportunities they own
-            owned_quote_products = QuoteLineItem.objects.filter(
-                quote__opportunity__owner=self.request.user
-            ).values_list('product', flat=True).distinct()
-            
-            queryset = queryset.filter(id__in=owned_quote_products)
+        # Users without organization can't see any products
+        if not self.request.user.organization:
+            return Product.objects.none()
+        
+        # All users in the organization can see all products in their organization
+        queryset = Product.objects.filter(organization=self.request.user.organization)
         
         # Filter by active status if provided
         is_active = self.request.query_params.get('is_active', None)
@@ -533,28 +737,28 @@ class ProductViewSet(viewsets.ModelViewSet):
             
         return queryset
 
+    def perform_create(self, serializer):
+        # Automatically set organization for new products
+        serializer.save(organization=self.request.user.organization)
+
     @action(detail=False, methods=['get'])
     def available_for_quotes(self, request):
-        """Get products available for creating quotes (sales reps can browse active products)"""
-        if request.user.role == 'sales_rep':
-            # Sales reps can browse active products when creating quotes
-            queryset = Product.objects.filter(is_active=True)
-        else:
-            # Admins/managers see all products
-            queryset = Product.objects.all()
-            
-        # Apply same filtering as main queryset
-        is_active = request.query_params.get('is_active', None)
-        if is_active is not None:
-            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+        """Get products available for creating quotes"""
+        if not request.user.is_authenticated or not request.user.organization:
+            return Response([])
+        
+        # All users can browse active products in their organization when creating quotes
+        queryset = Product.objects.filter(
+            organization=request.user.organization,
+            is_active=True
+        )
             
         # Apply search if provided
         search = request.query_params.get('search', None)
         if search:
             queryset = queryset.filter(
                 Q(name__icontains=search) | 
-                Q(description__icontains=search) |
-                Q(sku__icontains=search) if hasattr(Product, 'sku') else Q()
+                Q(description__icontains=search)
             )
             
         serializer = self.get_serializer(queryset, many=True)
@@ -566,31 +770,31 @@ class ProductViewSet(viewsets.ModelViewSet):
         """
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             # Only admins and managers can modify products
-            if self.request.user.role not in ['admin', 'manager', 'sales_rep']:
-                self.permission_classes = [permissions.IsAuthenticated]
+            if hasattr(self.request, 'user') and self.request.user.is_authenticated and self.request.user.role not in ['admin', 'manager']:
+                self.permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
                 return [permission() for permission in self.permission_classes]
         return super().get_permissions()
     
     def create(self, request, *args, **kwargs):
-        if request.user.role not in ['admin', 'manager', 'sales_rep']:
+        if not request.user.is_authenticated or request.user.role not in ['admin', 'manager']:
             return Response(
-                {'error': 'Only admins, managers, and sales reps can create products'},
+                {'error': 'Only admins and managers can create products'},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().create(request, *args, **kwargs)
     
     def update(self, request, *args, **kwargs):
-        if request.user.role not in ['admin', 'manager', 'sales_rep']:
+        if not request.user.is_authenticated or request.user.role not in ['admin', 'manager']:
             return Response(
-                {'error': 'Only admins, managers, and sales reps can update products'},
+                {'error': 'Only admins and managers can update products'},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
-        if request.user.role not in ['admin', 'manager', 'sales_rep']:
+        if not request.user.is_authenticated or request.user.role not in ['admin', 'manager']:
             return Response(
-                {'error': 'Only admins, managers, and sales reps can delete products'},
+                {'error': 'Only admins and managers can delete products'},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().destroy(request, *args, **kwargs)
@@ -599,17 +803,21 @@ class ProductViewSet(viewsets.ModelViewSet):
 class QuoteViewSet(viewsets.ModelViewSet):
     queryset = Quote.objects.all()
     serializer_class = QuoteSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['opportunity__name', 'created_by__email']
 
     def get_queryset(self):
-        queryset = Quote.objects.all().order_by('-created_at')
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return Quote.objects.none()
         
-        # Filter by ownership based on user role
-        if self.request.user.role == 'sales_rep':
-            # Sales reps can only see quotes for opportunities they own
-            queryset = queryset.filter(opportunity__owner=self.request.user)
+        # Users without organization can't see any quotes
+        if not self.request.user.organization:
+            return Quote.objects.none()
+        
+        # All users in the organization can see all quotes in their organization
+        queryset = Quote.objects.filter(organization=self.request.user.organization).order_by('-created_at')
         
         # Filter by opportunity if provided
         opportunity_id = self.request.query_params.get('opportunity', None)
@@ -619,7 +827,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        serializer.save(created_by=self.request.user, organization=self.request.user.organization)
 
     @action(detail=True, methods=['post'])
     def add_line_item(self, request, pk=None):
@@ -636,7 +844,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
             )
         
         try:
-            product = Product.objects.get(id=product_id)
+            product = Product.objects.get(id=product_id, organization=request.user.organization)
         except Product.DoesNotExist:
             return Response(
                 {'error': 'Product not found'},
@@ -651,7 +859,8 @@ class QuoteViewSet(viewsets.ModelViewSet):
             quote=quote,
             product=product,
             quantity=quantity,
-            unit_price=unit_price
+            unit_price=unit_price,
+            organization=request.user.organization
         )
         
         # Update quote total
@@ -669,17 +878,21 @@ class QuoteViewSet(viewsets.ModelViewSet):
 class QuoteLineItemViewSet(viewsets.ModelViewSet):
     queryset = QuoteLineItem.objects.all()
     serializer_class = QuoteLineItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, HasOrganizationAccess]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['product__name', 'quote__id']
 
     def get_queryset(self):
-        queryset = QuoteLineItem.objects.all()
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return QuoteLineItem.objects.none()
         
-        # Filter by ownership based on user role
-        if self.request.user.role == 'sales_rep':
-            # Sales reps can only see quote line items for opportunities they own
-            queryset = queryset.filter(quote__opportunity__owner=self.request.user)
+        # Users without organization can't see any quote line items
+        if not self.request.user.organization:
+            return QuoteLineItem.objects.none()
+        
+        # All users in the organization can see all quote line items in their organization
+        queryset = QuoteLineItem.objects.filter(organization=self.request.user.organization)
         
         # Filter by quote if provided
         quote_id = self.request.query_params.get('quote', None)
@@ -689,7 +902,7 @@ class QuoteLineItemViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        line_item = serializer.save()
+        line_item = serializer.save(organization=self.request.user.organization)
         # Update quote total after adding line item
         self._update_quote_total(line_item.quote)
 

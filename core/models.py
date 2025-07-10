@@ -3,7 +3,21 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-# 1. User
+# 1. Organization
+class Organization(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+
+
+# 2. User
 class User(AbstractUser):
     ROLE_CHOICES = [
         ('admin', 'Admin'),
@@ -11,11 +25,13 @@ class User(AbstractUser):
         ('sales_rep', 'Sales Representative'),
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='sales_rep')
+    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
 
     def __str__(self):
-        return f"{self.get_full_name() or self.username} ({self.get_role_display()})"
+        org_part = f" - {self.organization.name}" if self.organization else " - No Organization"
+        return f"{self.get_full_name() or self.username} ({self.get_role_display()}){org_part}"
 
-# 2. Lead
+# 3. Lead
 class Lead(models.Model):
     STATUS_CHOICES = [
         ('new', 'New'),
@@ -25,12 +41,13 @@ class Lead(models.Model):
         ('disqualified', 'Disqualified'),
     ]
     name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
     company = models.CharField(max_length=255, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
     source = models.CharField(max_length=100, blank=True)
     assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='leads')
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='leads')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -38,33 +55,35 @@ class Lead(models.Model):
         company_part = f" ({self.company})" if self.company else ""
         return f"{self.name}{company_part} - {self.get_status_display()}"
 
-# 3. Account
+# 4. Account
 class Account(models.Model):
     name = models.CharField(max_length=255)
     industry = models.CharField(max_length=255, blank=True)
     size = models.CharField(max_length=100, blank=True)
     location = models.CharField(max_length=255, blank=True)
     website = models.URLField(blank=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='accounts')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         industry_part = f" ({self.industry})" if self.industry else ""
         return f"{self.name}{industry_part}"
 
-# 4. Contact
+# 5. Contact
 class Contact(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='contacts')
     title = models.CharField(max_length=255, blank=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='contacts')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         title_part = f" ({self.title})" if self.title else ""
         return f"{self.name}{title_part} at {self.account.name}"
 
-# 5. Opportunity (aka Deal)
+# 6. Opportunity (aka Deal)
 class Opportunity(models.Model):
     STAGE_CHOICES = [
         ('qualification', 'Qualification'),
@@ -79,13 +98,14 @@ class Opportunity(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     stage = models.CharField(max_length=20, choices=STAGE_CHOICES, default='qualification')
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='opportunities')
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='opportunities')
     close_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} - ${self.amount:,.2f} ({self.get_stage_display()})"
 
-# 6. Task (e.g. call, follow-up, meeting)
+# 7. Task (e.g. call, follow-up, meeting)
 class Task(models.Model):
     TYPE_CHOICES = [
         ('call', 'Call'),
@@ -105,12 +125,13 @@ class Task(models.Model):
     related_lead = models.ForeignKey(Lead, on_delete=models.SET_NULL, null=True, blank=True)
     related_opportunity = models.ForeignKey(Opportunity, on_delete=models.SET_NULL, null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='tasks')
     notes = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.title} ({self.get_type_display()}) - {self.get_status_display()}"
 
-# 7. InteractionLog (Activity History)
+# 8. InteractionLog (Activity History)
 class InteractionLog(models.Model):
     TYPE_CHOICES = [
         ('call', 'Call'),
@@ -124,29 +145,32 @@ class InteractionLog(models.Model):
     opportunity = models.ForeignKey(Opportunity, on_delete=models.SET_NULL, null=True, blank=True)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     summary = models.TextField()
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='interaction_logs')
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         target = self.lead or self.contact or self.opportunity or "Unknown"
         return f"{self.get_type_display()} with {target} by {self.user.username}"
 
-# 8. Product
+# 9. Product
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2)
     currency = models.CharField(max_length=10, default='USD')
     is_active = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
 
     def __str__(self):
         return f"{self.name} ({self.currency} {self.price})"
 
-# 9. Quote
+# 10. Quote
 class Quote(models.Model):
     opportunity = models.ForeignKey(Opportunity, on_delete=models.CASCADE, related_name='quotes')
     title = models.CharField(max_length=255)
     total_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='quotes')
     created_at = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(blank=True)
 
@@ -163,12 +187,13 @@ class Quote(models.Model):
     def __str__(self):
         return f"{self.title} - {self.total_price}"
 
-# 10. QuoteLineItem
+# 11. QuoteLineItem
 class QuoteLineItem(models.Model):
     quote = models.ForeignKey(Quote, on_delete=models.CASCADE, related_name='line_items')
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True, related_name='quote_line_items')
 
     @property
     def total_price(self):
