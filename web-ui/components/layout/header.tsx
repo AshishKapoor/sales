@@ -1,15 +1,14 @@
-import { Bell, Search, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ThemeSwitcher } from "@/components/layout/theme-switcher";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout, getUser } from "@/lib/auth";
+import { Input } from "@/components/ui/input";
+import { getUser, logout } from "@/lib/auth";
+import { Bell, Search, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function Header() {
