@@ -718,24 +718,24 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description']
 
-    def get_queryset(self):
-        # Return empty queryset for unauthenticated users
-        if not self.request.user.is_authenticated:
-            return Product.objects.none()
+    # def get_queryset(self):
+    #     # Return empty queryset for unauthenticated users
+    #     if not self.request.user.is_authenticated:
+    #         return Product.objects.none()
         
-        # Users without organization can't see any products
-        if not self.request.user.organization:
-            return Product.objects.none()
+    #     # Users without organization can't see any products
+    #     if not self.request.user.organization:
+    #         return Product.objects.none()
         
-        # All users in the organization can see all products in their organization
-        queryset = Product.objects.filter(organization=self.request.user.organization)
+    #     # All users in the organization can see all products in their organization
+    #     queryset = Product.objects.filter(organization=self.request.user.organization)
         
-        # Filter by active status if provided
-        is_active = self.request.query_params.get('is_active', None)
-        if is_active is not None:
-            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+    #     # Filter by active status if provided
+    #     is_active = self.request.query_params.get('is_active', None)
+    #     if is_active is not None:
+    #         queryset = queryset.filter(is_active=is_active.lower() == 'true')
             
-        return queryset
+    #     return queryset
 
     def perform_create(self, serializer):
         # Automatically set organization for new products
@@ -776,25 +776,25 @@ class ProductViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
     
     def create(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or request.user.role not in ['admin', 'manager']:
+        if not request.user.is_authenticated or request.user.role not in ['admin', 'manager', 'sales_rep']:
             return Response(
-                {'error': 'Only admins and managers can create products'},
+                {'error': 'Only admins, managers, and sales representatives can create products'},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().create(request, *args, **kwargs)
     
     def update(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or request.user.role not in ['admin', 'manager']:
+        if not request.user.is_authenticated or request.user.role not in ['admin', 'manager', 'sales_rep']:
             return Response(
-                {'error': 'Only admins and managers can update products'},
+                {'error': 'Only admins, managers, and sales representatives can update products'},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or request.user.role not in ['admin', 'manager']:
+        if not request.user.is_authenticated or request.user.role not in ['admin', 'manager', 'sales_rep']:
             return Response(
-                {'error': 'Only admins and managers can delete products'},
+                {'error': 'Only admins, managers, and sales representatives can delete products'},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().destroy(request, *args, **kwargs)
