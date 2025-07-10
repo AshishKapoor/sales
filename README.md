@@ -1,5 +1,6 @@
 # 🚀 Sales CRM
-![Screenshot 2025-07-09 at 12 45 59 AM](https://github.com/user-attachments/assets/1fdedbad-36c7-48b6-a57f-ffa040569b0c)
+![Architecture](https://github.com/user-attachments/assets/d08f25e5-34cd-4312-b416-9fc61899130e)
+
 
 ## 🧩 Features
 
