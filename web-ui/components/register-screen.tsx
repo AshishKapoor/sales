@@ -88,10 +88,10 @@ export function RegisterScreen({
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="flex min-h-screen items-center justify-center bg-accent">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-lg bg-white p-8 shadow-md"
+        className="w-full max-w-md rounded-lg bg-background p-8 shadow-md"
       >
         <h2 className="mb-6 text-2xl font-bold text-center">Create Account</h2>
         <p className="mb-6 text-sm text-gray-600 text-center">
