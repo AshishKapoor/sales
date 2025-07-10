@@ -34,9 +34,9 @@ import type { Product } from "../../client/gen/sales/product";
 import {
   getV1ProductsListKey,
   useV1ProductsCreate,
-  useV1ProductsDestroy,
   useV1ProductsList,
-  useV1ProductsPartialUpdate,
+  v1ProductsDestroy,
+  v1ProductsPartialUpdate,
 } from "../../client/gen/sales/v1/v1";
 
 export default function ProductsTable() {
@@ -71,10 +71,7 @@ export default function ProductsTable() {
   const handleDelete = async (productToDelete: Product) => {
     if (!window.confirm(`Delete product '${productToDelete.name}'?`)) return;
     try {
-      const { trigger: deleteProduct } = useV1ProductsDestroy(
-        productToDelete.id
-      );
-      await deleteProduct();
+      await v1ProductsDestroy(productToDelete.id);
       toast.success("Product deleted successfully");
       refreshProducts();
     } catch (error) {
@@ -86,10 +83,7 @@ export default function ProductsTable() {
   const handleEdit = async () => {
     if (!editingProduct) return;
     try {
-      const { trigger: updateProduct } = useV1ProductsPartialUpdate(
-        editingProduct.id
-      );
-      await updateProduct({
+      await v1ProductsPartialUpdate(editingProduct.id, {
         name: editingProduct.name,
         description: editingProduct.description,
         price: editingProduct.price,
