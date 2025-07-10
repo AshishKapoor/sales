@@ -15,15 +15,17 @@ from .models import InteractionLog, Lead, Opportunity, Quote, Task
 def log_lead_creation(sender, instance, created, **kwargs):
     """Log when a new lead is created."""
     if created:
-        # Get the user who created the lead (either assigned_to or _created_by)
-        user = getattr(instance, '_created_by', None) or instance.assigned_to
+        # Get the user who created the lead - should always be assigned_to now
+        user = instance.assigned_to
         
-        InteractionLog.objects.create(
-            user=user,
-            lead=instance,
-            type='note',
-            summary=f"New lead created: {instance.name} from {instance.company or 'Unknown Company'}"
-        )
+        # Only create log if we have a valid user (safety check)
+        if user:
+            InteractionLog.objects.create(
+                user=user,
+                lead=instance,
+                type='note',
+                summary=f"New lead created: {instance.name} from {instance.company or 'Unknown Company'}"
+            )
 
 
 @receiver(pre_save, sender=Lead)

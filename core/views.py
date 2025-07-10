@@ -242,13 +242,12 @@ class LeadViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        # Set the created_by info for signal handling
-        lead = serializer.save()
-        lead._created_by = self.request.user
-        # If no assigned_to is set, assign to the creator
-        if not lead.assigned_to:
-            lead.assigned_to = self.request.user
-            lead.save()
+        # Auto-assign to the current user if no assigned_to is provided
+        if 'assigned_to' not in serializer.validated_data or serializer.validated_data.get('assigned_to') is None:
+            serializer.validated_data['assigned_to'] = self.request.user
+        
+        # Save the lead - assigned_to should always be set now
+        serializer.save()
 
     @action(detail=True, methods=['post'])
     def convert_to_opportunity(self, request, pk=None):
