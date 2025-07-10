@@ -94,6 +94,7 @@ export default function QuotesTable() {
         title: editingQuote.title,
         opportunity: editingQuote.opportunity,
         notes: editingQuote.notes,
+        total_price: editingQuote.total_price,
       });
       toast.success("Quote updated");
       setEditingQuote(null);
@@ -117,6 +118,7 @@ export default function QuotesTable() {
       title: newQuote.title,
       opportunity: newQuote.opportunity,
       notes: newQuote.notes || "",
+      total_price: newQuote.total_price || "0.00",
     };
     try {
       await createQuote(payload);
@@ -212,47 +214,64 @@ export default function QuotesTable() {
           <CardTitle className="text-xl font-bold">+ Add New Quote</CardTitle>
         </CardHeader>
         <CardContent>
-          <form
-            onSubmit={handleCreate}
-            className="flex flex-col md:flex-row gap-2 md:items-center"
-          >
-            <Input
-              placeholder="Quote Title"
-              value={newQuote.title || ""}
+          <form onSubmit={handleCreate} className="space-y-4">
+            <div className="flex flex-col md:flex-row gap-2 md:items-center">
+              <Input
+                placeholder="Quote Title"
+                value={newQuote.title || ""}
+                onChange={(e) =>
+                  setNewQuote({ ...newQuote, title: e.target.value })
+                }
+                required
+                className="md:w-48"
+              />
+              <Select
+                value={newQuote.opportunity?.toString() || ""}
+                onValueChange={(value) =>
+                  setNewQuote({ ...newQuote, opportunity: parseInt(value) })
+                }
+              >
+                <SelectTrigger className="md:w-48">
+                  <SelectValue placeholder="Select Opportunity" />
+                </SelectTrigger>
+                <SelectContent>
+                  {opportunities.map((opportunity) => (
+                    <SelectItem
+                      key={opportunity.id}
+                      value={opportunity.id.toString()}
+                    >
+                      {opportunity.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                placeholder="Total Price"
+                type="number"
+                step="0.01"
+                value={newQuote.total_price || ""}
+                onChange={(e) =>
+                  setNewQuote({ ...newQuote, total_price: e.target.value })
+                }
+                className="md:w-32"
+              />
+              <Button type="submit" className="md:ml-2" disabled={isCreating}>
+                {isCreating ? (
+                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                ) : (
+                  <Plus className="mr-2 h-4 w-4" />
+                )}
+                Add Quote
+              </Button>
+            </div>
+            <Textarea
+              placeholder="Notes (optional)"
+              value={newQuote.notes || ""}
               onChange={(e) =>
-                setNewQuote({ ...newQuote, title: e.target.value })
+                setNewQuote({ ...newQuote, notes: e.target.value })
               }
-              required
-              className="md:w-48"
+              className="w-full"
             />
-            <Select
-              value={newQuote.opportunity?.toString() || ""}
-              onValueChange={(value) =>
-                setNewQuote({ ...newQuote, opportunity: parseInt(value) })
-              }
-            >
-              <SelectTrigger className="md:w-48">
-                <SelectValue placeholder="Select Opportunity" />
-              </SelectTrigger>
-              <SelectContent>
-                {opportunities.map((opportunity) => (
-                  <SelectItem
-                    key={opportunity.id}
-                    value={opportunity.id.toString()}
-                  >
-                    {opportunity.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button type="submit" className="md:ml-2" disabled={isCreating}>
-              {isCreating ? (
-                <Loader2 className="animate-spin mr-2 h-4 w-4" />
-              ) : (
-                <Plus className="mr-2 h-4 w-4" />
-              )}
-              Add Quote
-            </Button>
           </form>
         </CardContent>
       </Card>
@@ -372,53 +391,78 @@ export default function QuotesTable() {
             <DialogTitle>Edit Quote</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEditForm} className="space-y-4">
-            <Input
-              placeholder="Title"
-              value={editingQuote?.title || ""}
-              onChange={(e) =>
-                setEditingQuote(
-                  editingQuote
-                    ? { ...editingQuote, title: e.target.value }
-                    : null
-                )
-              }
-              required
-            />
-            <Select
-              value={editingQuote?.opportunity?.toString() || ""}
-              onValueChange={(value) =>
-                setEditingQuote(
-                  editingQuote
-                    ? { ...editingQuote, opportunity: parseInt(value) }
-                    : null
-                )
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Opportunity" />
-              </SelectTrigger>
-              <SelectContent>
-                {opportunities.map((opportunity) => (
-                  <SelectItem
-                    key={opportunity.id}
-                    value={opportunity.id.toString()}
-                  >
-                    {opportunity.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Textarea
-              placeholder="Notes"
-              value={editingQuote?.notes || ""}
-              onChange={(e) =>
-                setEditingQuote(
-                  editingQuote
-                    ? { ...editingQuote, notes: e.target.value }
-                    : null
-                )
-              }
-            />
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Title</label>
+              <Input
+                placeholder="Title"
+                value={editingQuote?.title || ""}
+                onChange={(e) =>
+                  setEditingQuote(
+                    editingQuote
+                      ? { ...editingQuote, title: e.target.value }
+                      : null
+                  )
+                }
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Opportunity</label>
+              <Select
+                value={editingQuote?.opportunity?.toString() || ""}
+                onValueChange={(value) =>
+                  setEditingQuote(
+                    editingQuote
+                      ? { ...editingQuote, opportunity: parseInt(value) }
+                      : null
+                  )
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Opportunity" />
+                </SelectTrigger>
+                <SelectContent>
+                  {opportunities.map((opportunity) => (
+                    <SelectItem
+                      key={opportunity.id}
+                      value={opportunity.id.toString()}
+                    >
+                      {opportunity.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Total Price</label>
+              <Input
+                placeholder="Total Price"
+                type="number"
+                step="0.01"
+                value={editingQuote?.total_price || ""}
+                onChange={(e) =>
+                  setEditingQuote(
+                    editingQuote
+                      ? { ...editingQuote, total_price: e.target.value }
+                      : null
+                  )
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Notes</label>
+              <Textarea
+                placeholder="Notes"
+                value={editingQuote?.notes || ""}
+                onChange={(e) =>
+                  setEditingQuote(
+                    editingQuote
+                      ? { ...editingQuote, notes: e.target.value }
+                      : null
+                  )
+                }
+              />
+            </div>
             <div className="flex justify-end gap-2">
               <Button
                 type="button"
