@@ -32,10 +32,10 @@ export function LoginScreen() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="flex min-h-screen items-center justify-center bg-accent">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm rounded-lg bg-white p-8 shadow-md"
+        className="w-full max-w-sm rounded-lg bg-background p-8 shadow-md"
       >
         <h2 className="mb-6 text-2xl font-bold text-center">SALES CRM</h2>
         {error && (
