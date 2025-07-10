@@ -89,11 +89,13 @@ export default function RootLayout({
               onOrganizationCreated={handleOrganizationCreated}
             />
           ) : (
-            <div className="flex h-screen bg-muted shadow-lg">
+            <div className="flex h-screen bg-background shadow-lg">
               <Sidebar />
               <div className="flex flex-1 flex-col overflow-hidden">
                 <Header />
-                <main className="flex-1 overflow-auto p-6">{children}</main>
+                <main className="flex-1 overflow-auto p-6 rounded-2xl bg-white">
+                  {children}
+                </main>
                 <Toaster />
               </div>
             </div>
