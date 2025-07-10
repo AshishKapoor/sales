@@ -31,7 +31,7 @@ export function LoginScreen() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm rounded-lg bg-white p-8 shadow-md"
       >
-        <h2 className="mb-6 text-2xl font-bold text-center">Sales CRM</h2>
+        <h2 className="mb-6 text-2xl font-bold text-center">SALES CRM</h2>
         {error && (
           <div className="mb-4 rounded bg-red-100 px-4 py-2 text-red-700">
             {error}
