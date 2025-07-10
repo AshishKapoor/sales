@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ["yourdomain.com", "api.yourdomain.com", "sales.sannty.in", "*.sannty.in"]
+ALLOWED_HOSTS = ["api.sannty.in", "*.sannty.in"]
 
 DATABASES = {
     "default": {
@@ -49,4 +49,5 @@ CORS_ALLOWED_METHODS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://sales.sannty.in",
     "https://www.sales.sannty.in",
+    "https://api.sannty.in",
 ]
