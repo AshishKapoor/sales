@@ -458,7 +458,7 @@ export default function OpportunitiesTable() {
                   <SelectValue placeholder="Select contact" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No contact selected</SelectItem>
+                  <SelectItem value="none">No contact selected</SelectItem>
                   {contactsData?.results
                     ?.filter(
                       (contact) =>
