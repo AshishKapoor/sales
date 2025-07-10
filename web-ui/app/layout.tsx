@@ -93,7 +93,7 @@ export default function RootLayout({
               <Sidebar />
               <div className="flex flex-1 flex-col overflow-hidden">
                 <Header />
-                <main className="flex-1 overflow-auto p-6 rounded-2xl bg-white">
+                <main className="flex-1 overflow-auto p-6 rounded-2xl bg-secondary">
                   {children}
                 </main>
                 <Toaster />
