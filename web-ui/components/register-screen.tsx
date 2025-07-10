@@ -201,7 +201,7 @@ export function RegisterScreen({
           />
         </div>
 
-        <div className="mb-4 p-4 border rounded bg-gray-50">
+        <div className="mb-4 p-4 border rounded bg-background">
           <div className="flex items-center mb-3">
             <input
               id="createOrganization"
@@ -215,7 +215,7 @@ export function RegisterScreen({
               Create a new organization
             </label>
           </div>
-          <p className="text-xs text-gray-600 mb-3">
+          <p className="text-xs text-foreground mb-3">
             Check this if you're setting up Sales CRM for your company. You'll
             become the admin and can invite team members later.
           </p>
