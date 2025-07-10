@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/auth";
+import { RegisterScreen } from "./register-screen";
 
 export function LoginScreen() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export function LoginScreen() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +26,10 @@ export function LoginScreen() {
       setLoading(false);
     }
   };
+
+  if (showRegister) {
+    return <RegisterScreen onBackToLogin={() => setShowRegister(false)} />;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
@@ -67,11 +73,21 @@ export function LoginScreen() {
         </div>
         <button
           type="submit"
-          className="w-full rounded bg-primary px-4 py-2 font-semibold text-white hover:bg-primary-dark focus:outline-none focus:ring focus:ring-primary"
+          className="w-full rounded bg-primary px-4 py-2 font-semibold text-white hover:bg-primary-dark focus:outline-none focus:ring focus:ring-primary mb-4"
           disabled={loading}
         >
           {loading ? "Signing in..." : "Sign In"}
         </button>
+
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => setShowRegister(true)}
+            className="text-sm text-primary hover:text-primary-dark"
+          >
+            Don't have an account? Create one
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -217,7 +217,12 @@ export async function getUserId() {
   return null;
 }
 
-export async function register(email: string, password: string) {
+export async function register(
+  email: string,
+  password: string,
+  firstName?: string,
+  lastName?: string
+) {
   const response = await fetch(`${SALES_BASE_URL}/api/v1/register/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -226,10 +231,23 @@ export async function register(email: string, password: string) {
       email,
       password,
       confirm_password: password,
+      first_name: firstName || "",
+      last_name: lastName || "",
+      role: "sales_rep", // Default role
     }),
   });
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
+    // Handle field-specific errors
+    if (errorData?.email) {
+      throw new Error(errorData.email[0]);
+    }
+    if (errorData?.password) {
+      throw new Error(errorData.password[0]);
+    }
+    if (errorData?.confirm_password) {
+      throw new Error(errorData.confirm_password[0]);
+    }
     throw new Error(errorData?.detail || "Registration failed");
   }
   return await response.json();
