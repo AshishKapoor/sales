@@ -54,6 +54,7 @@ export function LoginScreen() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="e.g., john.doe@example.com"
             className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary"
           />
         </div>
@@ -68,6 +69,7 @@ export function LoginScreen() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your secure password"
             className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary"
           />
         </div>

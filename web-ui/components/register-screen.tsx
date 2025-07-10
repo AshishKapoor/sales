@@ -125,6 +125,7 @@ export function RegisterScreen({
               required
               value={formData.firstName}
               onChange={handleChange}
+              placeholder="e.g., John"
               className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary"
             />
           </div>
@@ -142,6 +143,7 @@ export function RegisterScreen({
               required
               value={formData.lastName}
               onChange={handleChange}
+              placeholder="e.g., Doe"
               className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary"
             />
           </div>
@@ -159,6 +161,7 @@ export function RegisterScreen({
             required
             value={formData.email}
             onChange={handleChange}
+            placeholder="e.g., john.doe@example.com"
             className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary"
           />
         </div>
@@ -175,6 +178,7 @@ export function RegisterScreen({
             required
             value={formData.password}
             onChange={handleChange}
+            placeholder="Create a strong password"
             className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary"
           />
           <p className="text-xs text-gray-500 mt-1">
@@ -197,6 +201,7 @@ export function RegisterScreen({
             required
             value={formData.confirmPassword}
             onChange={handleChange}
+            placeholder="Re-enter your password"
             className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary"
           />
         </div>
@@ -252,7 +257,7 @@ export function RegisterScreen({
                   name="organizationDescription"
                   value={formData.organizationDescription}
                   onChange={handleChange}
-                  placeholder="Brief description of your organization"
+                  placeholder="Briefly describe your organization (optional)"
                   rows={2}
                   className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-primary resize-none"
                 />
