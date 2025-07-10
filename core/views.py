@@ -718,24 +718,24 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description']
 
-    # def get_queryset(self):
-    #     # Return empty queryset for unauthenticated users
-    #     if not self.request.user.is_authenticated:
-    #         return Product.objects.none()
+    def get_queryset(self):
+        # Return empty queryset for unauthenticated users
+        if not self.request.user.is_authenticated:
+            return Product.objects.none()
         
-    #     # Users without organization can't see any products
-    #     if not self.request.user.organization:
-    #         return Product.objects.none()
+        # Users without organization can't see any products
+        if not self.request.user.organization:
+            return Product.objects.none()
         
-    #     # All users in the organization can see all products in their organization
-    #     queryset = Product.objects.filter(organization=self.request.user.organization)
+        # All users in the organization can see all products in their organization
+        queryset = Product.objects.filter(organization=self.request.user.organization)
         
     #     # Filter by active status if provided
     #     is_active = self.request.query_params.get('is_active', None)
     #     if is_active is not None:
     #         queryset = queryset.filter(is_active=is_active.lower() == 'true')
             
-    #     return queryset
+        return queryset
 
     def perform_create(self, serializer):
         # Automatically set organization for new products
