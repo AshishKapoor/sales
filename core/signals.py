@@ -57,25 +57,35 @@ def log_lead_status_change_post_save(sender, instance, created, **kwargs):
         
         action = status_messages.get(instance._new_status, f'status changed to {instance.get_status_display()}')
         
-        InteractionLog.objects.create(
-            user=instance.assigned_to,
-            lead=instance,
-            type='note',
-            summary=f"Lead {instance.name} {action}"
-        )
+        # Only create log if we have a valid assigned user (safety check)
+        if instance.assigned_to:
+            InteractionLog.objects.create(
+                user=instance.assigned_to,
+                lead=instance,
+                type='note',
+                summary=f"Lead {instance.name} {action}"
+            )
 
 
 @receiver(post_save, sender=Opportunity)
 def log_opportunity_creation(sender, instance, created, **kwargs):
     """Log when a new opportunity is created."""
     if created:
-        InteractionLog.objects.create(
-            user=instance.owner,
-            opportunity=instance,
-            contact=instance.contact,
-            type='note',
-            summary=f"New opportunity created: {instance.name} worth ${instance.amount:,.2f}"
-        )
+        # Get the user who owns the opportunity - should always be set now
+        user = instance.owner
+        print(f"DEBUG: Opportunity created: {instance.name}, owner: {user}")
+        
+        # Only create log if we have a valid user (safety check)
+        if user:
+            InteractionLog.objects.create(
+                user=user,
+                opportunity=instance,
+                contact=instance.contact,
+                type='note',
+                summary=f"New opportunity created: {instance.name} worth ${instance.amount:,.2f}"
+            )
+        else:
+            print(f"WARNING: Opportunity {instance.name} created without owner!")
 
 
 @receiver(pre_save, sender=Opportunity)
@@ -107,13 +117,15 @@ def log_opportunity_stage_change_post_save(sender, instance, created, **kwargs):
         
         action = stage_messages.get(instance._new_stage, f'stage changed to {instance.get_stage_display()}')
         
-        InteractionLog.objects.create(
-            user=instance.owner,
-            opportunity=instance,
-            contact=instance.contact,
-            type='note',
-            summary=f"Opportunity {instance.name} {action}"
-        )
+        # Only create log if we have a valid owner (safety check)
+        if instance.owner:
+            InteractionLog.objects.create(
+                user=instance.owner,
+                opportunity=instance,
+                contact=instance.contact,
+                type='note',
+                summary=f"Opportunity {instance.name} {action}"
+            )
 
 
 @receiver(pre_save, sender=Opportunity)
@@ -145,13 +157,15 @@ def log_opportunity_amount_change_post_save(sender, instance, created, **kwargs)
         change = instance._new_amount - instance._old_amount
         direction = "increased" if change > 0 else "decreased"
         
-        InteractionLog.objects.create(
-            user=instance.owner,
-            opportunity=instance,
-            contact=instance.contact,
-            type='note',
-            summary=f"Opportunity value {direction} from ${instance._old_amount:,.2f} to ${instance._new_amount:,.2f}"
-        )
+        # Only create log if we have a valid owner (safety check)
+        if instance.owner:
+            InteractionLog.objects.create(
+                user=instance.owner,
+                opportunity=instance,
+                contact=instance.contact,
+                type='note',
+                summary=f"Opportunity value {direction} from ${instance._old_amount:,.2f} to ${instance._new_amount:,.2f}"
+            )
 
 
 @receiver(post_save, sender=Task)
@@ -167,13 +181,15 @@ def log_task_completion(sender, instance, created, **kwargs):
 def log_quote_creation(sender, instance, created, **kwargs):
     """Log when a new quote is created."""
     if created:
-        InteractionLog.objects.create(
-            user=instance.created_by,
-            opportunity=instance.opportunity,
-            contact=instance.opportunity.contact,
-            type='note',
-            summary=f"Quote created: {instance.title} for ${instance.total_price:,.2f}"
-        )
+        # Only create log if we have a valid created_by user (safety check)
+        if instance.created_by:
+            InteractionLog.objects.create(
+                user=instance.created_by,
+                opportunity=instance.opportunity,
+                contact=instance.opportunity.contact,
+                type='note',
+                summary=f"Quote created: {instance.title} for ${instance.total_price:,.2f}"
+            )
 
 
 def create_task_completion_log(task, user):

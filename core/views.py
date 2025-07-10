@@ -337,6 +337,17 @@ class OpportunityViewSet(viewsets.ModelViewSet):
             
         return queryset
 
+    def perform_create(self, serializer):
+        # Auto-assign to the current user if no owner is provided
+        if 'owner' not in serializer.validated_data or serializer.validated_data.get('owner') is None:
+            print(f"DEBUG: Auto-assigning opportunity to user: {self.request.user}")
+            serializer.validated_data['owner'] = self.request.user
+        else:
+            print(f"DEBUG: Opportunity already has owner: {serializer.validated_data.get('owner')}")
+        
+        # Save the opportunity - owner should always be set now
+        serializer.save()
+
     @action(detail=False, methods=['get'])
     def pipeline_value(self, request):
         """Get total pipeline value"""
