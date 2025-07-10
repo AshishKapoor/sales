@@ -3,6 +3,7 @@ from datetime import date
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.db.models import Q
 from rest_framework import filters, generics, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -161,7 +162,27 @@ class AccountViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'industry', 'website']
 
     def get_queryset(self):
-        return Account.objects.all().order_by('-created_at')
+        queryset = Account.objects.all().order_by('-created_at')
+        
+        # Filter by assignment based on user role
+        if self.request.user.role == 'sales_rep':
+            # Sales reps can only see accounts from their assigned leads and owned opportunities
+            assigned_lead_accounts = Lead.objects.filter(
+                assigned_to=self.request.user,
+                company__isnull=False
+            ).exclude(company='').values_list('company', flat=True)
+            
+            owned_opportunity_accounts = Opportunity.objects.filter(
+                owner=self.request.user
+            ).values_list('account', flat=True)
+            
+            # Get accounts by name from leads or by ID from opportunities
+            queryset = queryset.filter(
+                Q(name__in=assigned_lead_accounts) |
+                Q(id__in=owned_opportunity_accounts)
+            ).distinct()
+        
+        return queryset
 
     @action(detail=True, methods=['get'])
     def contacts(self, request, pk=None):
@@ -189,6 +210,25 @@ class ContactViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Contact.objects.all().order_by('-created_at')
+        
+        # Filter by assignment based on user role
+        if self.request.user.role == 'sales_rep':
+            # Sales reps can only see contacts from accounts they have access to
+            # (either from assigned leads or owned opportunities)
+            assigned_lead_accounts = Lead.objects.filter(
+                assigned_to=self.request.user,
+                company__isnull=False
+            ).exclude(company='').values_list('company', flat=True)
+            
+            owned_opportunity_accounts = Opportunity.objects.filter(
+                owner=self.request.user
+            ).values_list('account', flat=True)
+            
+            # Get contacts from accessible accounts
+            queryset = queryset.filter(
+                Q(account__name__in=assigned_lead_accounts) |
+                Q(account__id__in=owned_opportunity_accounts)
+            ).distinct()
         
         # Filter by account if provided
         account_id = self.request.query_params.get('account', None)
@@ -477,12 +517,83 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Product.objects.all()
         
+        # Role-based filtering for products
+        if self.request.user.role == 'sales_rep':
+            # Sales reps can only see products that are used in quotes for opportunities they own
+            owned_quote_products = QuoteLineItem.objects.filter(
+                quote__opportunity__owner=self.request.user
+            ).values_list('product', flat=True).distinct()
+            
+            queryset = queryset.filter(id__in=owned_quote_products)
+        
         # Filter by active status if provided
         is_active = self.request.query_params.get('is_active', None)
         if is_active is not None:
             queryset = queryset.filter(is_active=is_active.lower() == 'true')
             
         return queryset
+
+    @action(detail=False, methods=['get'])
+    def available_for_quotes(self, request):
+        """Get products available for creating quotes (sales reps can browse active products)"""
+        if request.user.role == 'sales_rep':
+            # Sales reps can browse active products when creating quotes
+            queryset = Product.objects.filter(is_active=True)
+        else:
+            # Admins/managers see all products
+            queryset = Product.objects.all()
+            
+        # Apply same filtering as main queryset
+        is_active = request.query_params.get('is_active', None)
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+            
+        # Apply search if provided
+        search = request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | 
+                Q(description__icontains=search) |
+                Q(sku__icontains=search) if hasattr(Product, 'sku') else Q()
+            )
+            
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        """
+        Override permissions based on action and user role
+        """
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            # Only admins and managers can modify products
+            if self.request.user.role not in ['admin', 'manager']:
+                self.permission_classes = [permissions.IsAuthenticated]
+                return [permission() for permission in self.permission_classes]
+        return super().get_permissions()
+    
+    def create(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'manager']:
+            return Response(
+                {'error': 'Only admins and managers can create products'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'manager']:
+            return Response(
+                {'error': 'Only admins and managers can update products'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'manager']:
+            return Response(
+                {'error': 'Only admins and managers can delete products'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().destroy(request, *args, **kwargs)
 
 
 class QuoteViewSet(viewsets.ModelViewSet):
@@ -494,6 +605,11 @@ class QuoteViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Quote.objects.all().order_by('-created_at')
+        
+        # Filter by ownership based on user role
+        if self.request.user.role == 'sales_rep':
+            # Sales reps can only see quotes for opportunities they own
+            queryset = queryset.filter(opportunity__owner=self.request.user)
         
         # Filter by opportunity if provided
         opportunity_id = self.request.query_params.get('opportunity', None)
@@ -559,6 +675,11 @@ class QuoteLineItemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = QuoteLineItem.objects.all()
+        
+        # Filter by ownership based on user role
+        if self.request.user.role == 'sales_rep':
+            # Sales reps can only see quote line items for opportunities they own
+            queryset = queryset.filter(quote__opportunity__owner=self.request.user)
         
         # Filter by quote if provided
         quote_id = self.request.query_params.get('quote', None)
