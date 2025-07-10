@@ -236,7 +236,7 @@ export async function register(
       confirm_password: password,
       first_name: firstName || "",
       last_name: lastName || "",
-      role: "sales_rep", // Default role - will be changed to admin if creating organization
+      role: "admin", // Default role - will be changed to admin if creating organization
       create_organization: createOrganization || false,
       organization_name: organizationName || "",
       organization_description: organizationDescription || "",
