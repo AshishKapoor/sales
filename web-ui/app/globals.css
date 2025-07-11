@@ -12,6 +12,22 @@ body {
   }
 }
 
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter_28pt-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: 204 12.1951% 91.9608%;
@@ -46,9 +62,9 @@ body {
     --sidebar-accent-foreground: 224.4444 64.2857% 32.9412%;
     --sidebar-border: 220 13.0435% 90.9804%;
     --sidebar-ring: 13.2143 73.0435% 54.902%;
-    --font-sans: Inter, sans-serif;
-    --font-serif: Source Serif 4, serif;
-    --font-mono: JetBrains Mono, monospace;
+    --font-sans: "Inter", sans-serif;
+    --font-serif: "Source Serif 4", serif;
+    --font-mono: "JetBrains Mono", monospace;
     --radius: 0.75rem;
     --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
@@ -100,9 +116,9 @@ body {
     --sidebar-accent-foreground: 213.3333 96.9231% 87.2549%;
     --sidebar-border: 224.3478 15.8621% 28.4314%;
     --sidebar-ring: 13.2143 73.0435% 54.902%;
-    --font-sans: Inter, sans-serif;
-    --font-serif: Source Serif 4, serif;
-    --font-mono: JetBrains Mono, monospace;
+    --font-sans: "Inter", sans-serif;
+    --font-serif: "Source Serif 4", serif;
+    --font-mono: "JetBrains Mono", monospace;
     --radius: 0.75rem;
     --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
