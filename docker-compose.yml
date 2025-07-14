@@ -11,6 +11,7 @@ services:
       - frontend
     networks:
       - django_network
+    restart: always
 
   backend:
     build:
@@ -29,6 +30,7 @@ services:
       - db
     networks:
       - django_network
+    restart: always
 
   frontend:
     build:
@@ -44,6 +46,7 @@ services:
       - NODE_ENV=development
     networks:
       - django_network
+    restart: always
 
   migrate:
     profiles: ["migrate"]
@@ -71,6 +74,7 @@ services:
       - django_network
     ports:
       - "5432:5432"
+    restart: always
 
 volumes:
   postgres_data:
