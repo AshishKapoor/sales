@@ -1,590 +1,655 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  Heart,
   Users,
-  TrendingUp,
-  Target,
+  FileText,
   BarChart3,
+  Target,
   Zap,
-  Shield,
-  CheckCircle,
-  Star,
-  ArrowRight,
-  Phone,
   Mail,
   Calendar,
+  Slack,
+  CloudIcon as Salesforce,
+  HelpCircle,
+  BookOpen,
+  FileCheck,
+  TrendingUp,
+  MapPin,
+  Phone,
+  Globe,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
-export default function SalesCRMLanding() {
+export default function SalesCRMLandingPage() {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerHeight = 120; // Account for fixed header height
+      const elementPosition = element.offsetTop - headerHeight;
+      window.scrollTo({
+        top: elementPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-blue-700 text-white relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-full opacity-20 transform translate-x-32 -translate-y-32"></div>
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-tl from-teal-300 to-emerald-400 rounded-full opacity-30 transform translate-x-24 translate-y-24"></div>
+      <div className="absolute top-1/2 left-0 w-64 h-64 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-10 transform -translate-x-32"></div>
+
       {/* Header */}
-      <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
-        <Link href="/" className="flex items-center justify-center">
-          <Target className="h-8 w-8 text-orange-600" />
-          <span className="ml-2 text-xl font-bold text-gray-900">
-            Sales CRM
-          </span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link
-            href="#features"
-            className="text-sm font-medium hover:text-orange-600 transition-colors"
-          >
-            Features
-          </Link>
-          <Link
-            href="#testimonials"
-            className="text-sm font-medium hover:text-orange-600 transition-colors"
-          >
-            Reviews
-          </Link>
-          <Link
-            href="#contact"
-            className="text-sm font-medium hover:text-orange-600 transition-colors"
-          >
-            Contact
-          </Link>
-        </nav>
-        <div className="ml-6 flex gap-2">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="https://sales.sannty.in">Sign In</Link>
-          </Button>
-          <Button
-            size="sm"
-            className="bg-orange-600 hover:bg-orange-700"
-            asChild
-          >
-            <Link href="https://sales.sannty.in">Get Started Free</Link>
-          </Button>
+      <header className="fixed top-0 left-0 right-0 z-50 px-4 lg:px-6 py-4 bg-purple-700/90 backdrop-blur-md border-b border-white/10 transition-all duration-300">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Top badge */}
+          <div className="absolute -top-[-8px] left-1/2 transform -translate-x-1/2">
+            <Badge
+              variant="secondary"
+              className="bg-white/10 text-white border-white/20 flex items-center gap-2"
+            >
+              <span className="w-2 h-2 bg-teal-400 rounded-full"></span>
+              Sales CRM <Heart className="w-3 h-3 fill-current" /> Trusted by
+              Sales Teams
+            </Badge>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center gap-8 w-full justify-between mt-8">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+              </div>
+              <span className="text-xl font-semibold">Sales CRM</span>
+            </div>
+
+            <nav className="hidden lg:flex items-center gap-8">
+              <button
+                onClick={() => scrollToSection("features")}
+                className="text-white/80 hover:text-white transition-colors cursor-pointer"
+              >
+                Features
+              </button>
+              <button
+                onClick={() => scrollToSection("integrations")}
+                className="text-white/80 hover:text-white transition-colors cursor-pointer"
+              >
+                Integrations
+              </button>
+              <button
+                onClick={() => scrollToSection("resources")}
+                className="text-white/80 hover:text-white transition-colors cursor-pointer"
+              >
+                Resources
+              </button>
+              <Link
+                href="#"
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                Support
+              </Link>
+              <Link
+                href="https://sannty.in/about"
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                About
+              </Link>
+              <Link
+                href="https://sales.sannty.in"
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                Login
+              </Link>
+            </nav>
+
+            <Link href="https://sales.sannty.in">
+              <Button className="bg-white text-purple-700 hover:bg-white/90 font-semibold px-6">
+                Start For Free
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-orange-50 to-red-50">
-          <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">
-                    #1 Sales CRM Platform
-                  </Badge>
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    Close More Deals with Smart CRM
-                  </h1>
-                  <p className="max-w-[600px] text-gray-600 md:text-xl">
-                    Transform your sales process with our AI-powered CRM. Track
-                    leads, manage pipelines, and boost revenue with intelligent
-                    automation.
+      {/* Main Content */}
+      <main className="relative z-10 px-4 lg:px-6 pt-36 pb-24">
+        <div className="max-w-7xl mx-auto">
+          {/* Hero Section */}
+          <div className="max-w-4xl mb-32">
+            <h1 className="text-5xl lg:text-7xl font-bold leading-tight mb-8">
+              Stop losing deals in{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-400">
+                spreadsheets
+              </span>
+            </h1>
+
+            <p className="text-xl lg:text-2xl text-white/80 mb-12 max-w-2xl leading-relaxed">
+              Sales CRM is the all-in-one platform for managing leads,
+              opportunities, and quotations. Close more deals faster with
+              intelligent automation and powerful insights.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-16">
+              <Link href="https://sales.sannty.in">
+                <Button className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-6 rounded-xl flex items-center gap-3 text-lg font-semibold">
+                  <Zap className="w-6 h-6" />
+                  Start For Free
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 rounded-xl flex items-center gap-3 text-lg bg-transparent"
+              >
+                <Users className="w-6 h-6" />
+                Book a Demo
+              </Button>
+            </div>
+
+            {/* Feature highlights */}
+            <div
+              id="features"
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
+                  <Users className="w-6 h-6 text-teal-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Lead Management</h3>
+                  <p className="text-white/70">
+                    Capture and nurture every lead
                   </p>
                 </div>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button
-                    size="lg"
-                    className="bg-orange-600 hover:bg-orange-700"
-                    asChild
-                  >
-                    <Link href="https://sales.sannty.in">
-                      Get Started Free
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="lg">
-                    Watch Demo
-                  </Button>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
+                  <Target className="w-6 h-6 text-teal-400" />
                 </div>
-                <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <div className="flex items-center gap-1">
-                    <CheckCircle className="h-4 w-4 text-orange-600" />
-                    <span>100% Free Forever</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <CheckCircle className="h-4 w-4 text-orange-600" />
-                    <span>No setup fees</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/images/hero-illustration.svg"
-                  width="600"
-                  height="400"
-                  alt="Shopping and Sales Illustration"
-                  className="mx-auto aspect-video overflow-hidden rounded-xl object-cover shadow-2xl"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-white">
-          <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-4 md:grid-cols-2">
-              <div className="flex flex-col items-center space-y-2 text-center">
-                <div className="text-3xl font-bold text-orange-600">50K+</div>
-                <div className="text-sm text-gray-600">Active Users</div>
-              </div>
-              <div className="flex flex-col items-center space-y-2 text-center">
-                <div className="text-3xl font-bold text-orange-600">2.5M+</div>
-                <div className="text-sm text-gray-600">Deals Closed</div>
-              </div>
-              <div className="flex flex-col items-center space-y-2 text-center">
-                <div className="text-3xl font-bold text-orange-600">35%</div>
-                <div className="text-sm text-gray-600">
-                  Average Revenue Increase
-                </div>
-              </div>
-              <div className="flex flex-col items-center space-y-2 text-center">
-                <div className="text-3xl font-bold text-orange-600">99.9%</div>
-                <div className="text-sm text-gray-600">Uptime Guarantee</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section
-          id="features"
-          className="w-full py-12 md:py-24 lg:py-32 bg-gray-50"
-        >
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">
-                  Features
-                </Badge>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Everything You Need to Sell More
-                </h2>
-                <p className="max-w-[900px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Our comprehensive CRM platform provides all the tools your
-                  sales team needs to succeed.
-                </p>
-              </div>
-            </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
-              <Card>
-                <CardHeader>
-                  <Users className="h-10 w-10 text-orange-600" />
-                  <CardTitle>Lead Management</CardTitle>
-                  <CardDescription>
-                    Capture, qualify, and nurture leads from multiple sources
-                    with intelligent lead scoring.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Automated lead capture</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Lead scoring & qualification</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Multi-channel communication</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <TrendingUp className="h-10 w-10 text-orange-600" />
-                  <CardTitle>Sales Pipeline</CardTitle>
-                  <CardDescription>
-                    Visualize and manage your entire sales process with
-                    customizable pipeline stages.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Drag & drop pipeline</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Deal probability tracking</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Automated follow-ups</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <BarChart3 className="h-10 w-10 text-orange-600" />
-                  <CardTitle>Analytics & Reporting</CardTitle>
-                  <CardDescription>
-                    Get deep insights into your sales performance with advanced
-                    analytics and custom reports.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Real-time dashboards</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Custom report builder</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Performance forecasting</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <Zap className="h-10 w-10 text-orange-600" />
-                  <CardTitle>Automation</CardTitle>
-                  <CardDescription>
-                    Automate repetitive tasks and workflows to focus on what
-                    matters most - selling.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Email sequences</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Task automation</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Workflow triggers</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <Phone className="h-10 w-10 text-orange-600" />
-                  <CardTitle>Communication Hub</CardTitle>
-                  <CardDescription>
-                    Centralize all customer communications with built-in
-                    calling, emailing, and messaging.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Built-in phone system</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Email integration</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>SMS messaging</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <Shield className="h-10 w-10 text-orange-600" />
-                  <CardTitle>Security & Compliance</CardTitle>
-                  <CardDescription>
-                    Enterprise-grade security with GDPR compliance and advanced
-                    data protection.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>256-bit encryption</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>GDPR compliant</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-orange-600" />
-                      <span>Role-based access</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section
-          id="testimonials"
-          className="w-full py-12 md:py-24 lg:py-32 bg-white"
-        >
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">
-                  Testimonials
-                </Badge>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Loved by Sales Teams Worldwide
-                </h2>
-              </div>
-            </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                  </div>
-                  <CardDescription>
-                    "Sales CRM increased our conversion rate by 40% in just 3
-                    months. The automation features are game-changing."
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src="/placeholder.svg?height=40&width=40"
-                      width="40"
-                      height="40"
-                      alt="Sarah Johnson"
-                      className="rounded-full"
-                    />
-                    <div>
-                      <div className="font-semibold">Sarah Johnson</div>
-                      <div className="text-sm text-gray-600">
-                        Sales Director, TechCorp
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                  </div>
-                  <CardDescription>
-                    "The pipeline visualization and reporting features give us
-                    complete visibility into our sales process."
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src="/placeholder.svg?height=40&width=40"
-                      width="40"
-                      height="40"
-                      alt="Michael Chen"
-                      className="rounded-full"
-                    />
-                    <div>
-                      <div className="font-semibold">Michael Chen</div>
-                      <div className="text-sm text-gray-600">
-                        VP Sales, GrowthCo
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                  </div>
-                  <CardDescription>
-                    "Easy to use, powerful features, and excellent customer
-                    support. Our team adopted it within days."
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src="/placeholder.svg?height=40&width=40"
-                      width="40"
-                      height="40"
-                      alt="Emily Rodriguez"
-                      className="rounded-full"
-                    />
-                    <div>
-                      <div className="font-semibold">Emily Rodriguez</div>
-                      <div className="text-sm text-gray-600">
-                        Sales Manager, StartupXYZ
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-orange-600 to-red-600">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-white">
-                  Ready to Transform Your Sales?
-                </h2>
-                <p className="mx-auto max-w-[600px] text-orange-100 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Join thousands of sales teams using our completely free CRM
-                  platform.
-                </p>
-              </div>
-              <div className="w-full max-w-sm space-y-2">
-                <form className="flex gap-2">
-                  <Input
-                    type="email"
-                    placeholder="Enter your work email"
-                    className="max-w-lg flex-1 bg-white"
-                  />
-                  <Button
-                    type="submit"
-                    variant="secondary"
-                    className="bg-white text-orange-600 hover:bg-gray-100"
-                    asChild
-                  >
-                    <Link href="https://sales.sannty.in">Get Started Free</Link>
-                  </Button>
-                </form>
-                <p className="text-xs text-orange-100">
-                  100% Free • No hidden costs • Start immediately
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Section */}
-        <section
-          id="contact"
-          className="w-full py-12 md:py-24 lg:py-32 bg-gray-50"
-        >
-          <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12">
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                    Get in Touch
-                  </h2>
-                  <p className="max-w-[600px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                    Have questions? Our sales team is here to help you find the
-                    perfect plan for your business.
+                <div>
+                  <h3 className="font-semibold text-lg">Opportunities</h3>
+                  <p className="text-white/70">
+                    Track deals through your pipeline
                   </p>
                 </div>
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-orange-600" />
-                    <span>+91 989 977 1880</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-teal-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Smart Quotations</h3>
+                  <p className="text-white/70">Generate quotes in seconds</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Section */}
+          <div className="grid lg:grid-cols-2 gap-16 items-end mb-32">
+            <div>
+              <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                One platform to manage your entire{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-400">
+                  sales process
+                </span>
+              </h2>
+              <p className="text-xl text-white/80 mb-8">
+                From first contact to closed deal, Sales CRM streamlines every
+                step of your sales journey.
+              </p>
+
+              {/* Additional features */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+                  <span className="text-white/90">
+                    Advanced reporting & analytics
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+                  <span className="text-white/90">
+                    Email & calendar integration
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+                  <span className="text-white/90">
+                    Mobile app for iOS & Android
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+                  <span className="text-white/90">
+                    Custom workflows & automation
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-right">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <div className="text-3xl font-bold text-teal-400 mb-2">
+                      $2.4M+
+                    </div>
+                    <div className="text-white/80">Revenue Generated</div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-orange-600" />
-                    <span>ashish@sannty.in</span>
+                  <div>
+                    <div className="text-3xl font-bold text-teal-400 mb-2">
+                      15,000+
+                    </div>
+                    <div className="text-white/80">Deals Closed</div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-orange-600" />
-                    <span>Schedule a demo call</span>
+                  <div>
+                    <div className="text-3xl font-bold text-teal-400 mb-2">
+                      98%
+                    </div>
+                    <div className="text-white/80">Customer Satisfaction</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold text-teal-400 mb-2">
+                      45%
+                    </div>
+                    <div className="text-white/80">Faster Deal Closure</div>
                   </div>
                 </div>
               </div>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Request a Demo</CardTitle>
-                  <CardDescription>
-                    See Sales CRM in action with a personalized demo
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input placeholder="First name" />
-                    <Input placeholder="Last name" />
-                  </div>
-                  <Input placeholder="Work email" type="email" />
-                  <Input placeholder="Company name" />
-                  <Input placeholder="Phone number" type="tel" />
-                  <Button
-                    className="w-full bg-orange-600 hover:bg-orange-700"
-                    asChild
-                  >
-                    <Link href="https://sales.sannty.in">Get Started Free</Link>
-                  </Button>
-                </CardContent>
-              </Card>
             </div>
           </div>
-        </section>
+
+          {/* Integrations Section */}
+          <section id="integrations" className="mb-32">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                Seamlessly integrate with your{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-400">
+                  favorite tools
+                </span>
+              </h2>
+              <p className="text-xl text-white/80 max-w-3xl mx-auto">
+                Connect Sales CRM with the tools you already use to create a
+                unified workflow that boosts productivity.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {[
+                { icon: Mail, name: "Gmail", description: "Email sync" },
+                {
+                  icon: Calendar,
+                  name: "Outlook",
+                  description: "Calendar integration",
+                },
+                {
+                  icon: Slack,
+                  name: "Slack",
+                  description: "Team communication",
+                },
+                { icon: Salesforce, name: "Zapier", description: "Automation" },
+                {
+                  icon: FileText,
+                  name: "DocuSign",
+                  description: "E-signatures",
+                },
+                {
+                  icon: BarChart3,
+                  name: "HubSpot",
+                  description: "Marketing tools",
+                },
+                {
+                  icon: Users,
+                  name: "LinkedIn",
+                  description: "Social selling",
+                },
+                {
+                  icon: Target,
+                  name: "Mailchimp",
+                  description: "Email marketing",
+                },
+                { icon: Globe, name: "Zoom", description: "Video calls" },
+                {
+                  icon: FileCheck,
+                  name: "QuickBooks",
+                  description: "Accounting",
+                },
+                {
+                  icon: TrendingUp,
+                  name: "Google Analytics",
+                  description: "Web analytics",
+                },
+                { icon: Phone, name: "Twilio", description: "SMS & calls" },
+              ].map((integration, index) => (
+                <div
+                  key={index}
+                  className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-colors text-center"
+                >
+                  <integration.icon className="w-8 h-8 text-teal-400 mx-auto mb-3" />
+                  <h3 className="font-semibold mb-1">{integration.name}</h3>
+                  <p className="text-sm text-white/70">
+                    {integration.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Resources Section */}
+          <section id="resources" className="mb-32">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                Resources to help you{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-400">
+                  succeed
+                </span>
+              </h2>
+              <p className="text-xl text-white/80 max-w-3xl mx-auto">
+                Access guides, templates, and expert insights to maximize your
+                sales performance.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20 hover:bg-white/15 transition-colors">
+                <BookOpen className="w-12 h-12 text-teal-400 mb-4" />
+                <h3 className="text-2xl font-bold mb-4">Sales Playbooks</h3>
+                <p className="text-white/80 mb-6">
+                  Proven strategies and templates to accelerate your sales
+                  process and close more deals.
+                </p>
+                <Button
+                  variant="outline"
+                  className="border-teal-400 text-teal-400 hover:bg-teal-400 hover:text-white bg-transparent"
+                >
+                  Download Now
+                </Button>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20 hover:bg-white/15 transition-colors">
+                <FileCheck className="w-12 h-12 text-teal-400 mb-4" />
+                <h3 className="text-2xl font-bold mb-4">Case Studies</h3>
+                <p className="text-white/80 mb-6">
+                  Real success stories from companies that transformed their
+                  sales with our CRM platform.
+                </p>
+                <Button
+                  variant="outline"
+                  className="border-teal-400 text-teal-400 hover:bg-teal-400 hover:text-white bg-transparent"
+                >
+                  Read Stories
+                </Button>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20 hover:bg-white/15 transition-colors">
+                <HelpCircle className="w-12 h-12 text-teal-400 mb-4" />
+                <h3 className="text-2xl font-bold mb-4">Help Center</h3>
+                <p className="text-white/80 mb-6">
+                  Comprehensive documentation, tutorials, and FAQs to get the
+                  most out of Sales CRM.
+                </p>
+                <Button
+                  variant="outline"
+                  className="border-teal-400 text-teal-400 hover:bg-teal-400 hover:text-white bg-transparent"
+                >
+                  Get Help
+                </Button>
+              </div>
+            </div>
+          </section>
+
+          {/* Trust indicators */}
+          <div className="text-center mb-32">
+            <p className="text-white/60 mb-8">Trusted by sales teams at</p>
+            <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
+              <div className="bg-white/10 px-6 py-3 rounded-lg">TechCorp</div>
+              <div className="bg-white/10 px-6 py-3 rounded-lg">
+                SalesForce Inc
+              </div>
+              <div className="bg-white/10 px-6 py-3 rounded-lg">Growth Co</div>
+              <div className="bg-white/10 px-6 py-3 rounded-lg">
+                Revenue Labs
+              </div>
+              <div className="bg-white/10 px-6 py-3 rounded-lg">
+                Deal Masters
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t bg-white">
-        <p className="text-xs text-gray-600">
-          © 2025 Sales CRM. All rights reserved.
-        </p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <Link
-            href="#"
-            className="text-xs hover:underline underline-offset-4 text-gray-600"
-          >
-            Terms of Service
-          </Link>
-          <Link
-            href="#"
-            className="text-xs hover:underline underline-offset-4 text-gray-600"
-          >
-            Privacy Policy
-          </Link>
-          <Link
-            href="#"
-            className="text-xs hover:underline underline-offset-4 text-gray-600"
-          >
-            Cookie Policy
-          </Link>
-        </nav>
+      <footer className="relative z-10 bg-purple-900/50 backdrop-blur-sm border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 lg:px-6 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+            {/* Company Info */}
+            <div className="lg:col-span-2">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-purple-600" />
+                </div>
+                <span className="text-xl font-semibold">Sales CRM</span>
+              </div>
+              <p className="text-white/80 mb-6 max-w-md">
+                The all-in-one CRM platform that helps sales teams manage leads,
+                opportunities, and quotations more effectively.
+              </p>
+              <div className="space-y-2">
+                {/* <div className="flex items-center gap-3 text-white/70">
+                  <MapPin className="w-4 h-4" />
+                  <span></span>
+                </div> */}
+                <div className="flex items-center gap-3 text-white/70">
+                  <Phone className="w-4 h-4" />
+                  <span>+91 9899771880</span>
+                </div>
+                <div className="flex items-center gap-3 text-white/70">
+                  <Mail className="w-4 h-4" />
+                  <span>ashish@sannty.in</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Product */}
+            <div>
+              <h3 className="font-semibold text-lg mb-4">Product</h3>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Integrations
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Mobile App
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    API
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Security
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h3 className="font-semibold text-lg mb-4">Resources</h3>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Case Studies
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Webinars
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Templates
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h3 className="font-semibold text-lg mb-4">Company</h3>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Press
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Partners
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Footer */}
+          <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <div className="text-white/60 mb-4 md:mb-0">
+              © 2025 Sales CRM. All rights reserved.
+            </div>
+            <div className="flex gap-6">
+              <Link
+                href="#"
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                href="#"
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                Terms of Service
+              </Link>
+              <Link
+                href="#"
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                Cookie Policy
+              </Link>
+            </div>
+          </div>
+        </div>
       </footer>
+
+      {/* Mobile Menu Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="lg:hidden fixed top-4 right-4 z-20 bg-white/10 hover:bg-white/20"
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 12H21M3 6H21M3 18H21"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </Button>
     </div>
   );
 }
