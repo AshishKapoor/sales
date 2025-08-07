@@ -1,4 +1,7 @@
 # 🚀 Sales CRM
+
+<img width="1536" height="1024" alt="ChatGPT Image Aug 7, 2025, 11_16_51 AM" src="https://github.com/user-attachments/assets/52802837-fc88-4933-be75-03558b644e32" />
+
 ![Architecture](https://github.com/user-attachments/assets/d08f25e5-34cd-4312-b416-9fc61899130e)
 
 
